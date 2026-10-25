@@ -35,7 +35,7 @@ h2{font-size:16px;margin:0 0 10px}
 .tab{display:none}
 .tab.on{display:block;animation:fade .25s}
 @keyframes fade{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:none}}
-nav.bottom{position:fixed;left:0;right:0;bottom:0;z-index:10;display:grid;grid-template-columns:repeat(4,1fr);background:rgba(13,18,28,.96);backdrop-filter:blur(8px);border-top:1px solid var(--line);padding-bottom:env(safe-area-inset-bottom)}
+nav.bottom{position:fixed;left:0;right:0;bottom:0;z-index:10;display:grid;grid-template-columns:repeat(5,1fr);background:rgba(13,18,28,.96);backdrop-filter:blur(8px);border-top:1px solid var(--line);padding-bottom:env(safe-area-inset-bottom)}
 nav.bottom button{all:unset;cursor:pointer;height:var(--nav);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;font-size:11px;font-weight:600;color:var(--muted)}
 nav.bottom button svg{width:22px;height:22px}
 nav.bottom button.on{color:var(--warn)}
@@ -97,6 +97,22 @@ tr.hl td{background:rgba(245,158,11,.08)}
 .worldinfo{font-size:14px;min-height:22px;margin:8px 0;text-align:center}
 
 /* Anúncios */
+/* Bolão */
+.chute{text-align:center}
+.chute .placar{display:flex;justify-content:space-between;font-size:26px;font-weight:800;font-variant-numeric:tabular-nums;margin:8px 0}
+.chute input[type=range]{width:100%;accent-color:var(--warn);height:32px}
+.chute .step{display:flex;gap:8px;justify-content:center;margin:6px 0 12px}
+.chute .step button{all:unset;cursor:pointer;padding:8px 14px;border-radius:10px;background:var(--line);font-weight:700;font-size:14px}
+.field{display:block;text-align:left;font-size:12px;color:var(--muted);margin-bottom:10px}
+.field input{display:block;width:100%;margin-top:4px;padding:12px;border-radius:10px;border:1px solid var(--line);background:var(--bg);color:var(--text);font:inherit;font-size:16px}
+.btn{display:block;width:100%;border:0;border-radius:14px;padding:14px;background:var(--warn);color:#1a1204;font:inherit;font-size:16px;font-weight:800;cursor:pointer}
+.btn:disabled{opacity:.5;cursor:default}
+.erro{color:#ff8a8a;font-size:13px;min-height:18px;margin-top:6px}
+.meu{border-color:var(--warn)}
+.meu .pos{font-size:40px;font-weight:800;color:var(--warn);line-height:1}
+.rank td:first-child{width:34px;font-weight:800;color:var(--muted)}
+.rank tr.eu td{background:rgba(245,158,11,.12)}
+.rank .cid{display:block;font-size:11px;color:var(--muted)}
 .share{display:flex;align-items:center;justify-content:center;gap:8px;width:100%;border:0;border-radius:14px;padding:14px;margin-bottom:14px;background:#25d366;color:#062b14;font:inherit;font-size:16px;font-weight:800;cursor:pointer;text-decoration:none}
 .share:active{transform:scale(.98)}
 .share svg{width:22px;height:22px}
@@ -224,6 +240,52 @@ footer a{color:var(--muted)}
     </section>
   </main>
 
+  <!-- ABA 5: bolão -->
+  <main class="tab" id="tab-bolao">
+    <section class="panel">
+      <h2>Bolão da Apuração 🎯</h2>
+      <div class="muted" style="font-size:13px">Chute quanto cada candidato vai ter no 2º turno. Quem chegar mais perto do resultado final do TSE ganha o topo do ranking.</div>
+      <div class="muted" style="font-size:12px;margin-top:6px" id="bolaoStatus">–</div>
+    </section>
+
+    <section class="panel" id="bolaoOff" hidden>
+      <b>O Bolão abre em breve.</b>
+      <div class="muted" style="font-size:13px">Estamos terminando a configuração. Volte em alguns minutos.</div>
+    </section>
+
+    <section class="panel chute" id="bolaoForm" hidden>
+      <div class="muted" style="font-size:13px">Arraste para escolher o seu palpite</div>
+      <div class="placar"><span id="chA" style="color:var(--a)">–</span><span id="chB" style="color:var(--b)">–</span></div>
+      <div class="muted" style="display:flex;justify-content:space-between;font-size:12px"><span id="chNA">–</span><span id="chNB">–</span></div>
+      <input type="range" id="chute" min="30" max="70" step="0.1" value="50" aria-label="Palpite">
+      <div class="step">
+        <button type="button" data-step="-1">−1</button><button type="button" data-step="-0.1">−0,1</button>
+        <button type="button" data-step="0.1">+0,1</button><button type="button" data-step="1">+1</button>
+      </div>
+      <label class="field">Seu nome (aparece no ranking)<input id="bNome" maxlength="24" autocomplete="nickname" placeholder="Ex.: Isaque"></label>
+      <label class="field">Sua cidade<input id="bCidade" maxlength="30" placeholder="Ex.: Xinguara-PA"></label>
+      <button class="btn" id="bEnviar">Enviar palpite</button>
+      <div class="erro" id="bErro"></div>
+      <div class="muted" style="font-size:11px">Um palpite por aparelho. Depois de enviado não dá para mudar.</div>
+    </section>
+
+    <section class="panel meu" id="bolaoMeu" hidden>
+      <div class="muted" style="font-size:13px">Seu palpite</div>
+      <div style="font-size:18px;font-weight:800;margin:4px 0 10px" id="meuChute">–</div>
+      <div style="display:flex;align-items:baseline;gap:10px"><span class="pos" id="meuPos">–</span><span class="muted" id="meuPosTxt">–</span></div>
+      <div class="muted" style="font-size:13px;margin-top:6px" id="meuErro">–</div>
+    </section>
+    <a class="share" data-share="bolao" href="#" target="_blank" rel="noopener" id="bolaoShare" hidden>Desafiar amigos no WhatsApp</a>
+
+    <a class="ad" data-ad href="#"><b>ANUNCIE AQUI</b><span>Patrocine o Bolão da Apuração</span></a>
+
+    <section class="panel" id="bolaoRank" hidden>
+      <h2 id="rankTitulo">Quem está mais perto agora</h2>
+      <div class="muted" style="font-size:12px;margin:-6px 0 8px" id="rankSub">–</div>
+      <table class="rank"><tbody id="rankBody"></tbody></table>
+    </section>
+  </main>
+
   <footer>
     <div class="credit">Desenvolvido por <b>Isaque Soares</b> · Xinguara-PA</div>
     Fonte: <a href="https://resultados.tse.jus.br" target="_blank" rel="noopener">resultados.tse.jus.br</a> · placar nacional a cada 5 s, estados a cada 20 s.
@@ -235,6 +297,7 @@ footer a{color:var(--muted)}
   <button data-tab="projecao"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 17l6-6 4 4 8-8"/><path d="M15 7h6v6"/></svg>Projeção</button>
   <button data-tab="estados"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/></svg>Estados</button>
   <button data-tab="mundo"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3a14 14 0 0 1 0 18M12 3a14 14 0 0 0 0 18"/></svg>Mundo</button>
+  <button data-tab="bolao"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="5"/><circle cx="12" cy="12" r="1.5" fill="currentColor"/></svg>Bolão</button>
 </nav>
 
 <script>
@@ -662,6 +725,11 @@ function showTab(t){
   });
   if(t === 'mundo' && !worldTimer) startWorld();
   if(t !== 'mundo'){ clearInterval(worldTimer); worldTimer = null; }
+  clearInterval(bolaoTimer); bolaoTimer = null;
+  if(t === 'bolao'){
+    const tick = ()=>tickBolao().catch(()=>{ $('bolaoStatus').textContent = 'Falha ao atualizar o Bolão. Tentando de novo…'; });
+    tick(); bolaoTimer = setInterval(tick, BOLAO_MS);
+  }
   window.scrollTo(0, 0);
 }
 document.querySelectorAll('nav.bottom button').forEach(b=>b.addEventListener('click', ()=>{
@@ -669,6 +737,149 @@ document.querySelectorAll('nav.bottom button').forEach(b=>b.addEventListener('cl
   showTab(b.dataset.tab);
 }));
 window.addEventListener('hashchange', ()=>showTab(location.hash.slice(1)));
+
+/* ---------- Bolão ---------- */
+// Configuração do app web do Firebase (Console → Configurações do projeto → Seus apps). null = Bolão desligado.
+const FIREBASE = null;
+const BOLAO_FECHA = new Date('2026-10-25T19:00:00-03:00'); // o mesmo horário está em firestore.rules
+const BOLAO_A = '13', BOLAO_B = '22'; // candidatos do 2º turno; o palpite guardado é o % do BOLAO_A nos votos válidos
+const BOLAO_MS = 30000;
+const FB_SDK = 'https://www.gstatic.com/firebasejs/11.0.2/';
+let fb = null, bolaoTimer = null, meu = null, atual = null, bolaoNomes = ['', ''];
+
+const esc = s => String(s).replace(/[&<>"']/g, c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+
+// Firebase só é baixado quando a aba Bolão é aberta
+function initBolao(){
+  if(!FIREBASE) return Promise.resolve(null);
+  fb ||= (async()=>{
+    const [{initializeApp}, fs, au] = await Promise.all(['firebase-app.js','firebase-firestore.js','firebase-auth.js'].map(f=>import(FB_SDK + f)));
+    const app = initializeApp(FIREBASE);
+    const cred = await au.signInAnonymously(au.getAuth(app)); // um palpite por aparelho, sem cadastro
+    return {fs, db: fs.getFirestore(app), uid: cred.user.uid};
+  })().catch(e=>{ fb = null; throw e; });
+  return fb;
+}
+
+// O Bolão sempre usa o 2º turno, independente do turno escolhido no topo
+async function dados2T(){
+  const d = await getJSON(url('br', '6258'));
+  const cs = Object.fromEntries(candidates(d).map(c=>[c.n,c]));
+  bolaoNomes = [cs[BOLAO_A].nm, cs[BOLAO_B].nm];
+  const vA = cs[BOLAO_A].votos, vB = cs[BOLAO_B].votos;
+  return {pctA: vA+vB ? vA/(vA+vB)*100 : null, pst: num(d.s.pst), pstS: d.s.pst, final: d.tf === 's'};
+}
+
+const placarChute = p => `${bolaoNomes[0]} ${pc1(p)}% × ${pc1(100-p)}% ${bolaoNomes[1]}`;
+
+function renderSlider(){
+  const p = Number($('chute').value);
+  $('chA').textContent = pc1(p) + '%'; $('chB').textContent = pc1(100-p) + '%';
+  $('chNA').textContent = bolaoNomes[0]; $('chNB').textContent = bolaoNomes[1];
+}
+$('chute').addEventListener('input', renderSlider);
+document.querySelectorAll('[data-step]').forEach(b=>b.addEventListener('click', ()=>{
+  const s = $('chute');
+  s.value = clamp(Math.round((Number(s.value) + Number(b.dataset.step))*10)/10, 30, 70);
+  renderSlider();
+}));
+
+async function tickBolao(){
+  let f;
+  try{ f = await initBolao(); }
+  catch{ $('bolaoStatus').textContent = 'Não foi possível conectar ao Bolão. Tentando de novo…'; return; }
+  $('bolaoOff').hidden = !!f;
+  if(!f){ $('bolaoStatus').textContent = ''; return; }
+  const {fs, db, uid} = f;
+  const col = fs.collection(db, 'palpites');
+
+  try{ atual = await dados2T(); }catch{}
+  if(meu === null){
+    const s = await fs.getDoc(fs.doc(col, uid));
+    meu = s.exists() ? s.data() : false;
+  }
+  const aberto = Date.now() < BOLAO_FECHA;
+  $('bolaoForm').hidden = !!meu || !aberto;
+  $('bolaoMeu').hidden = !meu;
+  $('bolaoShare').hidden = !meu && !aberto;
+  renderSlider();
+
+  const ref = atual?.pctA ?? null;
+  const consultas = [fs.getAggregateFromServer(col, {n: fs.count(), media: fs.average('pct')})];
+  if(ref !== null) consultas.push(
+    fs.getDocs(fs.query(col, fs.where('pct', '>=', ref), fs.orderBy('pct'), fs.limit(10))),
+    fs.getDocs(fs.query(col, fs.where('pct', '<', ref), fs.orderBy('pct', 'desc'), fs.limit(10))));
+  const [agg, acima, abaixo] = await Promise.all(consultas);
+  const {n, media} = agg.data();
+
+  const hora = BOLAO_FECHA.toLocaleTimeString('pt-BR', {hour:'2-digit', minute:'2-digit'});
+  $('bolaoStatus').textContent = (aberto ? `Palpites abertos até ${hora}` : `Palpites encerrados às ${hora}`) +
+    ` · ${fmt(n)} palpite${n===1?'':'s'}` + (n ? ` · média: ${placarChute(media)}` : '');
+
+  if(meu){
+    $('meuChute').textContent = placarChute(meu.pct);
+    if(ref === null){
+      $('meuPos').textContent = '–';
+      $('meuPosTxt').textContent = 'sua posição aparece quando começarem os votos';
+      $('meuErro').textContent = '';
+    }else{
+      const err = Math.abs(meu.pct - ref);
+      const maisPerto = (await fs.getCountFromServer(fs.query(col, fs.where('pct', '>', ref-err), fs.where('pct', '<', ref+err)))).data().count;
+      $('meuPos').textContent = (maisPerto + 1) + 'º';
+      $('meuPosTxt').textContent = `de ${fmt(n)} ${atual.final ? 'no resultado final' : 'se a apuração acabasse agora'}`;
+      $('meuErro').textContent = `Você está a ${pc2(err)} p.p. do resultado atual (${bolaoNomes[0]} ${pc2(ref)}% com ${atual.pstS}% apurado).`;
+    }
+  }
+
+  $('bolaoRank').hidden = false;
+  if(ref === null){
+    $('rankTitulo').textContent = 'Ranking';
+    $('rankSub').textContent = 'O ranking aparece assim que o TSE publicar os primeiros votos.';
+    $('rankBody').innerHTML = '';
+    return;
+  }
+  $('rankTitulo').textContent = atual.final ? '🏆 Resultado final do Bolão' : 'Quem está mais perto agora';
+  $('rankSub').textContent = `Comparando com ${bolaoNomes[0]} ${pc2(ref)}% · ${atual.pstS}% apurado`;
+  const lista = [...acima.docs, ...abaixo.docs]
+    .map(d=>({id:d.id, ...d.data(), err:Math.abs(d.data().pct - ref)}))
+    .sort((a,b)=>a.err-b.err || (a.em?.toMillis?.()||0)-(b.em?.toMillis?.()||0)) // empate: quem chutou primeiro
+    .slice(0, 10);
+  $('rankBody').innerHTML = lista.length ? lista.map((p,i)=>`
+    <tr class="${p.id===uid?'eu':''}">
+      <td>${i===0&&atual.final?'🏆':(i+1)+'º'}</td>
+      <td>${esc(p.nome)}${p.cidade?`<span class="cid">${esc(p.cidade)}</span>`:''}</td>
+      <td class="r">${pc1(p.pct)}%</td>
+      <td class="r muted">±${pc2(p.err)}</td>
+    </tr>`).join('') : '<tr><td colspan="4" class="muted">Nenhum palpite ainda. Seja o primeiro!</td></tr>';
+}
+
+$('bEnviar').addEventListener('click', async ()=>{
+  const nome = $('bNome').value.trim().replace(/\s+/g,' '), cidade = $('bCidade').value.trim().replace(/\s+/g,' ');
+  const ok = /^[\p{L}\p{N} .'-]+$/u;
+  if(nome.length < 2 || !ok.test(nome)) return $('bErro').textContent = 'Digite seu nome (só letras e números).';
+  if(cidade && !ok.test(cidade)) return $('bErro').textContent = 'A cidade só pode ter letras e números.';
+  if(Date.now() >= BOLAO_FECHA) return $('bErro').textContent = 'Os palpites já foram encerrados.';
+  $('bErro').textContent = ''; $('bEnviar').disabled = true; $('bEnviar').textContent = 'Enviando…';
+  try{
+    const {fs, db, uid} = await initBolao();
+    const palpite = {nome, cidade, pct: Math.round(Number($('chute').value)*10)/10, em: fs.serverTimestamp(), pstNoPalpite: atual?.pst ?? 0};
+    await fs.setDoc(fs.doc(db, 'palpites', uid), palpite);
+    meu = palpite;
+    try{ localStorage.setItem('bolaoNome', nome); }catch{}
+    await tickBolao();
+  }catch(e){
+    $('bErro').textContent = 'Não foi possível enviar. Talvez você já tenha mandado um palpite deste aparelho.';
+  }finally{
+    $('bEnviar').disabled = false; $('bEnviar').textContent = 'Enviar palpite';
+  }
+});
+try{ $('bNome').value = localStorage.getItem('bolaoNome') || ''; }catch{}
+
+function textoBolao(){
+  return meu
+    ? `🎯 Meu palpite no *Bolão da Apuração*: ${placarChute(meu.pct)}\n\nDuvido você chegar mais perto! Faça o seu: ${SITE}#bolao`
+    : `🎯 *Bolão da Apuração* · Chute o resultado do 2º turno e veja se você acerta: ${SITE}#bolao`;
+}
 
 // Texto do compartilhamento, montado na hora do toque com o placar mais recente
 const SITE = 'https://szac-dev.github.io/apuracao-presidente-2026/';
@@ -689,7 +900,7 @@ function textoProjecao(){
     `Com ${$('pst').textContent} das seções apuradas.\n\nVeja ao vivo: ${SITE}#projecao`;
 }
 document.querySelectorAll('[data-share]').forEach(a=>a.addEventListener('click', ()=>{
-  const txt = a.dataset.share === 'projecao' ? textoProjecao() : textoPlacar();
+  const txt = {projecao:textoProjecao, bolao:textoBolao}[a.dataset.share]?.() ?? textoPlacar();
   a.href = 'https://wa.me/?text=' + encodeURIComponent(txt);
 }));
 

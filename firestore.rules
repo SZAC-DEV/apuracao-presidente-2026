@@ -1,0 +1,31 @@
+rules_version = '2';
+
+// Regras do Bolão da Apuração.
+// Cada aparelho (login anônimo) pode criar um único palpite, até o horário de encerramento.
+// Ninguém pode alterar ou apagar palpites pelo site; só o dono do projeto, pelo Console do Firebase.
+service cloud.firestore {
+  match /databases/{database}/documents {
+    match /palpites/{uid} {
+      allow read: if true;
+
+      allow create: if request.auth != null
+        && request.auth.uid == uid
+        // 25/10/2026 19:00 (Brasília) = 22:00 UTC. Mude junto com BOLAO_FECHA no index.html.
+        && request.time < timestamp.value(1792965600000)
+        && request.resource.data.keys().hasOnly(['nome', 'cidade', 'pct', 'em', 'pstNoPalpite'])
+        && request.resource.data.keys().hasAll(['nome', 'cidade', 'pct', 'em', 'pstNoPalpite'])
+        && request.resource.data.nome is string
+        && request.resource.data.nome.size() >= 2
+        && request.resource.data.nome.size() <= 24
+        && request.resource.data.cidade is string
+        && request.resource.data.cidade.size() <= 30
+        && request.resource.data.pct is number
+        && request.resource.data.pct >= 30
+        && request.resource.data.pct <= 70
+        && request.resource.data.pstNoPalpite is number
+        && request.resource.data.em == request.time;
+
+      allow update, delete: if false;
+    }
+  }
+}
