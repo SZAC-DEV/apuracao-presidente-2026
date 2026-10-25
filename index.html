@@ -97,6 +97,9 @@ tr.hl td{background:rgba(245,158,11,.08)}
 .worldinfo{font-size:14px;min-height:22px;margin:8px 0;text-align:center}
 
 /* Anúncios */
+.share{display:flex;align-items:center;justify-content:center;gap:8px;width:100%;border:0;border-radius:14px;padding:14px;margin-bottom:14px;background:#25d366;color:#062b14;font:inherit;font-size:16px;font-weight:800;cursor:pointer;text-decoration:none}
+.share:active{transform:scale(.98)}
+.share svg{width:22px;height:22px}
 .ad{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;text-align:center;text-decoration:none;color:var(--muted);border:2px dashed var(--line);border-radius:14px;padding:16px 12px;min-height:84px;margin-bottom:14px;background:repeating-linear-gradient(135deg,transparent 0 12px,rgba(255,255,255,.02) 12px 24px);transition:border-color .2s,color .2s}
 .ad:hover{border-color:var(--warn);color:var(--text)}
 .ad b{font-size:17px;letter-spacing:.08em;color:var(--warn)}
@@ -141,6 +144,8 @@ footer a{color:var(--muted)}
     <div class="split" id="split"></div>
     <div class="diff muted" id="diff"></div>
 
+    <a class="share" data-share="placar" href="#" target="_blank" rel="noopener"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2a10 10 0 0 0-8.6 15.1L2 22l5-1.3A10 10 0 1 0 12 2zm5.3 14.2c-.2.6-1.3 1.2-1.8 1.2-.5.1-1 .2-3.3-.7-2.8-1.1-4.5-3.9-4.7-4.1-.1-.2-1.1-1.5-1.1-2.8s.7-2 1-2.3c.2-.3.5-.3.7-.3h.5c.2 0 .4 0 .6.5l.8 2c.1.2.1.4 0 .5l-.3.5-.4.4c-.1.1-.3.3-.1.6.2.3.7 1.2 1.6 2 1.1 1 2 1.3 2.3 1.4.3.1.5.1.6-.1l.9-1.1c.2-.3.4-.2.7-.1l1.9.9c.3.1.5.2.5.3.1.2.1.7-.1 1.2z"/></svg>Compartilhar placar no WhatsApp</a>
+
     <section class="stats">
       <div class="panel stat"><span>Comparecimento</span><b id="comp">–</b><small class="muted" id="compP"></small></div>
       <div class="panel stat"><span>Abstenção</span><b id="abst">–</b><small class="muted" id="abstP"></small></div>
@@ -164,6 +169,8 @@ footer a{color:var(--muted)}
       <div class="range"><div class="band" id="projBand"></div><div class="mid"></div><div class="pt" id="projPt"></div></div>
       <div class="muted" style="font-size:13px" id="projNote">–</div>
     </section>
+
+    <a class="share" data-share="projecao" href="#" target="_blank" rel="noopener">Compartilhar projeção no WhatsApp</a>
 
     <a class="ad" data-ad href="#"><b>ANUNCIE AQUI</b><span>Espaço para patrocinador</span></a>
 
@@ -662,6 +669,29 @@ document.querySelectorAll('nav.bottom button').forEach(b=>b.addEventListener('cl
   showTab(b.dataset.tab);
 }));
 window.addEventListener('hashchange', ()=>showTab(location.hash.slice(1)));
+
+// Texto do compartilhamento, montado na hora do toque com o placar mais recente
+const SITE = 'https://szac-dev.github.io/apuracao-presidente-2026/';
+function textoPlacar(){
+  const [a, b] = [...document.querySelectorAll('#cands .cand')].map(c=>({
+    nm: c.querySelector('.nm').firstChild.textContent.trim(),
+    pct: c.querySelector('.pct').textContent,
+    votos: c.querySelector('.votes').textContent
+  }));
+  if(!a || !b) return `🗳️ Acompanhe a apuração para Presidente ao vivo: ${SITE}`;
+  return `🗳️ *Apuração Presidente 2026* · ${$('pst').textContent} das seções apuradas\n\n` +
+    `🔴 ${a.nm}: *${a.pct}* (${a.votos})\n🔵 ${b.nm}: *${b.pct}* (${b.votos})\n\n` +
+    `${$('diff').textContent}\n\nAo vivo, direto do TSE: ${SITE}`;
+}
+function textoProjecao(){
+  return `📈 *Projeção Presidente 2026* (estimativa, não é resultado oficial)\n\n` +
+    `${$('projVerdict').textContent}\n${$('projA').textContent} × ${$('projB').textContent}\n` +
+    `Com ${$('pst').textContent} das seções apuradas.\n\nVeja ao vivo: ${SITE}#projecao`;
+}
+document.querySelectorAll('[data-share]').forEach(a=>a.addEventListener('click', ()=>{
+  const txt = a.dataset.share === 'projecao' ? textoProjecao() : textoPlacar();
+  a.href = 'https://wa.me/?text=' + encodeURIComponent(txt);
+}));
 
 document.querySelectorAll('[data-ad]').forEach(a=>{
   if(AD_WHATSAPP){ a.href = `https://wa.me/${AD_WHATSAPP}?text=${encodeURIComponent(AD_MENSAGEM)}`; a.target = '_blank'; a.rel = 'noopener'; }
