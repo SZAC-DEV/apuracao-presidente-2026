@@ -54,10 +54,28 @@ tr.hl td{background:rgba(245,158,11,.08)}
 .mini{display:flex;height:8px;border-radius:99px;overflow:hidden;background:var(--line);min-width:80px}
 .flash{animation:flash 1s}
 @keyframes flash{0%{background:rgba(34,197,94,.25)}100%{background:transparent}}
+.proj{margin-bottom:16px;border-color:#3a3f1f;background:linear-gradient(180deg,#171a12,var(--panel))}
+.proj h2{display:flex;justify-content:space-between;gap:8px;flex-wrap:wrap;align-items:baseline}
+.proj h2 small{font-weight:500;color:var(--muted);font-size:12px}
+.proj .verdict{font-size:20px;font-weight:800;margin:4px 0 10px}
+.proj .nums{display:flex;justify-content:space-between;font-variant-numeric:tabular-nums;font-weight:700;margin-bottom:6px}
+.proj .range{position:relative;height:14px;background:var(--line);border-radius:99px;margin:6px 0}
+.proj .range .band{position:absolute;top:0;bottom:0;background:rgba(245,158,11,.35);border-radius:99px}
+.proj .range .mid{position:absolute;top:-4px;bottom:-4px;width:2px;background:var(--text);left:50%}
+.proj .range .pt{position:absolute;top:-3px;width:20px;height:20px;margin-left:-10px;border-radius:50%;background:var(--warn);border:3px solid var(--bg)}
+.proj details{margin-top:8px;font-size:13px;color:var(--muted)}
+.proj details summary{cursor:pointer}
+.ad{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;text-align:center;text-decoration:none;color:var(--muted);border:2px dashed var(--line);border-radius:14px;padding:18px 12px;margin-bottom:16px;background:repeating-linear-gradient(135deg,transparent 0 12px,rgba(255,255,255,.02) 12px 24px);transition:border-color .2s,color .2s}
+.ad:hover{border-color:var(--warn);color:var(--text)}
+.ad b{font-size:18px;letter-spacing:.08em;color:var(--warn)}
+.ad span{font-size:12px}
+.ad-wide{min-height:90px}
+.ads2{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.credit{font-size:14px;color:var(--text);margin-bottom:6px}
 footer{margin-top:20px;font-size:12px;color:var(--muted);text-align:center}
 footer a{color:var(--muted)}
 @media (max-width:720px){
-  .cands{grid-template-columns:1fr}
+  .cands,.ads2{grid-template-columns:1fr}
   .stats{grid-template-columns:repeat(2,1fr)}
   .cand .pct{font-size:36px}
   .hide-sm{display:none}
@@ -67,7 +85,7 @@ footer a{color:var(--muted)}
 <body>
 <div class="wrap">
   <header>
-    <h1>Apuração Presidente 2026<small>Dados oficiais do TSE, ao vivo · Feito em Xinguara-PA</small></h1>
+    <h1>Apuração Presidente 2026<small>Dados oficiais do TSE, ao vivo · Desenvolvido por Isaque Soares · Xinguara-PA</small></h1>
     <div style="display:flex;gap:12px;align-items:center;flex-wrap:wrap">
       <select id="turno" aria-label="Turno">
         <option value="6258">2º turno · 25/10</option>
@@ -76,6 +94,11 @@ footer a{color:var(--muted)}
       <span class="live"><span id="dot" class="dot"></span><span id="liveTxt">conectando…</span></span>
     </div>
   </header>
+
+  <a class="ad ad-wide" data-ad href="#">
+    <b>ANUNCIE AQUI</b>
+    <span>Sua marca vista por todo mundo que acompanha a apuração</span>
+  </a>
 
   <section class="panel progress" id="progress">
     <div class="row">
@@ -89,6 +112,24 @@ footer a{color:var(--muted)}
   <section class="cands" id="cands"></section>
   <div class="split" id="split"></div>
   <div class="diff muted" id="diff"></div>
+
+  <section class="panel proj" id="proj" hidden>
+    <h2>Projeção: quem deve ganhar <small>estimativa matemática, não é resultado oficial</small></h2>
+    <div class="verdict" id="projVerdict">–</div>
+    <div class="nums"><span id="projA" style="color:var(--a)">–</span><span id="projB" style="color:var(--b)">–</span></div>
+    <div class="range"><div class="band" id="projBand"></div><div class="mid"></div><div class="pt" id="projPt"></div></div>
+    <div class="muted" style="font-size:13px" id="projNote">–</div>
+    <details>
+      <summary>Como a projeção é calculada</summary>
+      <p>Para cada estado, o site calcula quantos votos ainda faltam apurar (eleitores das seções não apuradas × comparecimento × taxa de votos válidos) e distribui esses votos na proporção que cada candidato está tendo <i>naquele estado</i>. Enquanto um estado tem poucos votos apurados, a proporção é puxada para o resultado dele no 1º turno. Somando todos os estados sai o placar projetado.</p>
+      <p>A faixa amarela mostra o pior e o melhor caso se os votos que faltam em todos os estados virarem alguns pontos para um lado. A faixa fica mais estreita conforme a apuração avança. Quando ela inteira fica de um lado dos 50%, a tendência está consolidada.</p>
+    </details>
+  </section>
+
+  <div class="ads2">
+    <a class="ad" data-ad href="#"><b>ANUNCIE AQUI</b><span>Espaço para patrocinador</span></a>
+    <a class="ad" data-ad href="#"><b>ANUNCIE AQUI</b><span>Espaço para patrocinador</span></a>
+  </div>
 
   <section class="panel others" id="others" hidden>
     <h2>Demais candidatos</h2>
@@ -110,7 +151,13 @@ footer a{color:var(--muted)}
     </table>
   </section>
 
+  <a class="ad ad-wide" data-ad href="#">
+    <b>ANUNCIE AQUI</b>
+    <span>Espaço para patrocinador · rodapé</span>
+  </a>
+
   <footer>
+    <div class="credit">Desenvolvido por <b>Isaque Soares</b> · Xinguara-PA</div>
     Fonte: <a href="https://resultados.tse.jus.br" target="_blank" rel="noopener">resultados.tse.jus.br</a> (mesma base usada pelas TVs e pelo app do TSE).
     Atualiza o placar nacional a cada 5 s e os estados a cada 20 s.
   </footer>
@@ -121,8 +168,11 @@ const BASE = 'https://resultados.tse.jus.br/oficial/ele2026';
 const UFS = ['ac','al','am','ap','ba','ce','df','es','go','ma','mg','ms','mt','pa','pb','pe','pi','pr','rj','rn','ro','rr','rs','sc','se','sp','to','zz'];
 const UF_NOME = {zz:'Exterior'};
 const NATIONAL_MS = 5000, STATES_MS = 20000;
+// Link dos espaços "Anuncie aqui" (ex.: 'https://wa.me/5594999999999'). Vazio = sem link.
+const AD_CONTATO = '';
+const ELE_1T = '6257'; // usado como ponto de partida da projeção do 2º turno
 
-let ele = '6258', lastIdg = null, ufData = {}, order = [];
+let ele = '6258', lastIdg = null, ufData = {}, order = [], prior = null;
 let natTimer, ufTimer, lastOk = 0;
 
 const $ = id => document.getElementById(id);
@@ -131,9 +181,9 @@ const fmt = n => n.toLocaleString('pt-BR');
 const pct = s => (s ?? '0,00') + '%';
 const COLORS = ['var(--a)','var(--b)'];
 
-function url(abr){
-  const e = ele.padStart(6,'0');
-  return `${BASE}/${ele}/dados/${abr}/${abr}-c0001-e${e}-u.json`;
+function url(abr, el = ele){
+  const e = el.padStart(6,'0');
+  return `${BASE}/${el}/dados/${abr}/${abr}-c0001-e${e}-u.json`;
 }
 
 async function getJSON(u){
@@ -213,6 +263,86 @@ function renderStates(){
       <td>${r.b?pct(r.b.pct):'–'}</td>
       <td class="hide-sm"><div class="mini"><i style="width:${r.wa}%;background:var(--a)"></i><i style="width:${r.wb}%;background:var(--b)"></i></div></td>
     </tr>`).join('');
+  renderProjection();
+}
+
+// Resultado do 1º turno por estado: proporção entre os dois finalistas, comparecimento e votos válidos
+async function loadPrior(){
+  if(prior) return;
+  const p = {};
+  await Promise.all(UFS.map(async u=>{
+    try{
+      const d = await getJSON(url(u, ELE_1T));
+      const c = num(d.e.c), te = num(d.e.te);
+      p[u] = {votos:Object.fromEntries(candidates(d).map(x=>[x.n,x.votos])), turnout: te ? c/te : 0.79, valid: c ? num(d.v.vv)/c : 0.94};
+    }catch{}
+  }));
+  prior = p;
+}
+
+const clamp = (x,a,b) => Math.min(b, Math.max(a, x));
+const pc2 = x => x.toFixed(2).replace('.', ',');
+
+function renderProjection(){
+  const top = window.__top;
+  if(ele !== '6258' || !top || !prior){ $('proj').hidden = true; return; }
+  const [A, B] = top;
+  let pA = 0, pB = 0, minA = 0, maxA = 0, falta = 0, apurado = 0, ufsOk = 0;
+
+  for(const u of UFS){
+    const d = ufData[u]; if(!d) continue;
+    ufsOk++;
+    const p = prior[u] || {};
+    const cs = Object.fromEntries(candidates(d).map(c=>[c.n,c.votos]));
+    const vA = cs[A] || 0, vB = cs[B] || 0;
+    const est = num(d.e.est), esnt = num(d.e.esnt), c = num(d.e.c), vv = num(d.v.vv);
+
+    // Comparecimento e votos válidos: usa o que já foi apurado hoje; sem dados, usa o 1º turno
+    const turnout = est && c ? c/est : (p.turnout ?? 0.79);
+    const valid = c && vv ? vv/c : (p.valid ?? 0.94);
+    const R = esnt * turnout * valid;          // votos válidos que ainda faltam neste estado
+    const esperado = num(d.e.te) * turnout * valid;
+
+    // Proporção do candidato A neste estado: apuração atual + "peso" do 1º turno (3% do estado)
+    const p1A = p.votos?.[A] || 0, p1B = p.votos?.[B] || 0;
+    const priorShare = p1A + p1B ? p1A/(p1A+p1B) : 0.5;
+    const K = 0.03 * esperado;
+    const share = (vA + priorShare*K) / (vA + vB + K || 1);
+
+    // Incerteza: até 8 p.p. de virada nos votos que faltam, diminuindo conforme o estado apura
+    const restante = esperado ? clamp(R/esperado, 0, 1) : 0;
+    const s = 0.02 + 0.06*restante;
+
+    pA += vA + R*share;           pB += vB + R*(1-share);
+    minA += vA + R*clamp(share-s, 0, 1);
+    maxA += vA + R*clamp(share+s, 0, 1);
+    falta += R; apurado += vA + vB;
+  }
+  if(!ufsOk){ $('proj').hidden = true; return; }
+
+  const tot = pA + pB || 1;
+  const sA = pA/tot*100, sB = pB/tot*100;
+  const lo = minA/tot*100, hi = maxA/tot*100;
+  const nA = $('hA').textContent, nB = $('hB').textContent;
+  const lider = sA >= sB ? nA : nB, cor = sA >= sB ? 'var(--a)' : 'var(--b)';
+  const apuradoPct = apurado/(apurado+falta||1)*100;
+
+  let verdict;
+  if(apurado === 0) verdict = `Antes da apuração: favoritismo de <span style="color:${cor}">${lider}</span> pelo 1º turno`;
+  else if(lo > 50) verdict = `Tendência consolidada: <span style="color:var(--a)">${nA}</span> deve vencer`;
+  else if(hi < 50) verdict = `Tendência consolidada: <span style="color:var(--b)">${nB}</span> deve vencer`;
+  else verdict = `Disputa em aberto · <span style="color:${cor}">${lider}</span> leva vantagem na projeção`;
+
+  $('proj').hidden = false;
+  $('projVerdict').innerHTML = verdict;
+  $('projA').textContent = `${nA} ${pc2(sA)}%`;
+  $('projB').textContent = `${pc2(sB)}% ${nB}`;
+  $('projBand').style.left = clamp(lo,0,100) + '%';
+  $('projBand').style.width = clamp(hi-lo,0,100) + '%';
+  $('projPt').style.left = clamp(sA,0,100) + '%';
+  $('projNote').textContent = apurado === 0
+    ? 'Ainda sem votos apurados: projeção baseada só no 1º turno. Ela vai se ajustando a cada atualização do TSE.'
+    : `Faixa provável para ${nA}: ${pc2(lo)}% a ${pc2(hi)}% · cerca de ${fmt(Math.round(falta))} votos válidos ainda por apurar (${pc2(100-apuradoPct)}% do total estimado).`;
 }
 
 function setLive(ok, txt){
@@ -253,10 +383,16 @@ function start(){
   clearInterval(natTimer); clearInterval(ufTimer);
   lastIdg = null; ufData = {}; order = []; window.__top = null;
   $('ufs').innerHTML = '';
-  tickNational().then(tickStates);
+  $('proj').hidden = true;
+  tickNational().then(()=>Promise.all([tickStates(), ele === '6258' ? loadPrior() : null])).then(renderStates);
   natTimer = setInterval(tickNational, NATIONAL_MS);
   ufTimer = setInterval(tickStates, STATES_MS);
 }
+
+document.querySelectorAll('[data-ad]').forEach(a=>{
+  if(AD_CONTATO){ a.href = AD_CONTATO; a.target = '_blank'; a.rel = 'noopener'; }
+  else a.addEventListener('click', e=>e.preventDefault());
+});
 
 $('turno').addEventListener('change', e=>{ ele = e.target.value; start(); });
 document.addEventListener('visibilitychange', ()=>{ if(!document.hidden) tickNational(); });
