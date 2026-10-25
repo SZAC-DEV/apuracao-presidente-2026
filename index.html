@@ -2,91 +2,120 @@
 <html lang="pt-BR">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#0b0f17">
 <title>Apuração Presidente 2026</title>
-<meta name="description" content="Apuração ao vivo da eleição para Presidente 2026, direto dos dados oficiais do TSE. Feito em Xinguara-PA.">
+<meta name="description" content="Apuração ao vivo da eleição para Presidente 2026, direto dos dados oficiais do TSE. Desenvolvido por Isaque Soares, Xinguara-PA.">
 <link rel="preconnect" href="https://resultados.tse.jus.br">
 <style>
 :root{
   --bg:#0b0f17; --panel:#121826; --line:#222b3d; --text:#e8edf6; --muted:#8a96ad;
   --a:#e23b3b; --b:#2f6fe0; --ok:#22c55e; --warn:#f59e0b;
+  --nav:64px;
 }
 *{box-sizing:border-box}
-html,body{margin:0;background:var(--bg);color:var(--text);font:15px/1.45 system-ui,-apple-system,"Segoe UI",Roboto,Arial,sans-serif}
-.wrap{max-width:1100px;margin:0 auto;padding:16px}
-header{display:flex;flex-wrap:wrap;gap:12px;align-items:center;justify-content:space-between;margin-bottom:16px}
-h1{font-size:22px;margin:0;letter-spacing:-.01em}
-h1 small{display:block;font-size:13px;font-weight:500;color:var(--muted)}
-.live{display:inline-flex;align-items:center;gap:8px;font-size:13px;color:var(--muted)}
-.dot{width:10px;height:10px;border-radius:50%;background:var(--muted)}
+html,body{margin:0;background:var(--bg);color:var(--text);font:15px/1.45 system-ui,-apple-system,"Segoe UI",Roboto,Arial,sans-serif;-webkit-tap-highlight-color:transparent}
+body{padding-bottom:calc(var(--nav) + env(safe-area-inset-bottom))}
+.wrap{max-width:760px;margin:0 auto;padding:16px}
+header{display:flex;flex-wrap:wrap;gap:10px;align-items:center;justify-content:space-between;margin-bottom:14px}
+h1{font-size:20px;margin:0;letter-spacing:-.01em}
+h1 small{display:block;font-size:12px;font-weight:500;color:var(--muted)}
+.hdr-r{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+.live{display:inline-flex;align-items:center;gap:8px;font-size:12px;color:var(--muted)}
+.dot{width:10px;height:10px;border-radius:50%;background:var(--muted);flex:none}
 .dot.on{background:var(--ok);box-shadow:0 0 0 0 rgba(34,197,94,.7);animation:pulse 1.6s infinite}
 .dot.err{background:var(--a)}
 @keyframes pulse{70%{box-shadow:0 0 0 10px rgba(34,197,94,0)}100%{box-shadow:0 0 0 0 rgba(34,197,94,0)}}
-select{background:var(--panel);color:var(--text);border:1px solid var(--line);border-radius:8px;padding:6px 8px;font:inherit}
-.panel{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:16px}
-.progress{margin-bottom:16px}
+select{background:var(--panel);color:var(--text);border:1px solid var(--line);border-radius:8px;padding:6px 8px;font:inherit;font-size:14px}
+.panel{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:16px;margin-bottom:14px}
+h2{font-size:16px;margin:0 0 10px}
+.muted{color:var(--muted)}
+
+/* Abas */
+.tab{display:none}
+.tab.on{display:block;animation:fade .25s}
+@keyframes fade{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:none}}
+nav.bottom{position:fixed;left:0;right:0;bottom:0;z-index:10;display:grid;grid-template-columns:repeat(4,1fr);background:rgba(13,18,28,.96);backdrop-filter:blur(8px);border-top:1px solid var(--line);padding-bottom:env(safe-area-inset-bottom)}
+nav.bottom button{all:unset;cursor:pointer;height:var(--nav);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;font-size:11px;font-weight:600;color:var(--muted)}
+nav.bottom button svg{width:22px;height:22px}
+nav.bottom button.on{color:var(--warn)}
+nav.bottom button:focus-visible{outline:2px solid var(--warn);outline-offset:-4px}
+
+/* Apuração */
 .progress .row{display:flex;justify-content:space-between;align-items:baseline;gap:8px;flex-wrap:wrap}
 .big{font-size:34px;font-weight:800;font-variant-numeric:tabular-nums}
 .bar{height:10px;background:var(--line);border-radius:99px;overflow:hidden;margin-top:8px}
 .bar>i{display:block;height:100%;background:var(--ok);width:0;transition:width .6s}
-.muted{color:var(--muted)}
-.cands{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:16px}
-.cand{position:relative;display:flex;gap:14px;align-items:center;overflow:hidden}
-.cand img{width:84px;height:84px;border-radius:50%;object-fit:cover;background:var(--line);flex:none;border:3px solid var(--c)}
-.cand .nm{font-size:18px;font-weight:700}
-.cand .pct{font-size:44px;font-weight:800;line-height:1;color:var(--c);font-variant-numeric:tabular-nums}
+.cands{display:grid;grid-template-columns:1fr;gap:12px;margin-bottom:12px}
+.cand{display:flex;gap:14px;align-items:center;margin:0}
+.cand img{width:76px;height:76px;border-radius:50%;object-fit:cover;background:var(--line);flex:none;border:3px solid var(--c)}
+.cand .nm{font-size:17px;font-weight:700}
+.cand .pct{font-size:42px;font-weight:800;line-height:1;color:var(--c);font-variant-numeric:tabular-nums}
 .cand .votes{font-variant-numeric:tabular-nums;color:var(--muted)}
-.badge{display:inline-block;font-size:12px;font-weight:700;padding:2px 8px;border-radius:99px;background:var(--ok);color:#04110a;margin-left:6px;vertical-align:middle}
-.split{display:flex;height:22px;border-radius:99px;overflow:hidden;background:var(--line);margin-bottom:6px}
+.badge{display:inline-block;font-size:11px;font-weight:700;padding:2px 8px;border-radius:99px;background:var(--ok);color:#04110a;margin-left:6px;vertical-align:middle}
+.split{display:flex;height:20px;border-radius:99px;overflow:hidden;background:var(--line);margin-bottom:6px}
 .split i{transition:width .6s}
-.diff{text-align:center;margin-bottom:16px;font-variant-numeric:tabular-nums}
-.others{margin-bottom:16px}
-.others table td:first-child{width:50%}
-.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:16px}
+.diff{text-align:center;margin-bottom:14px;font-variant-numeric:tabular-nums}
+.stats{display:grid;grid-template-columns:repeat(2,1fr);gap:12px;margin-bottom:14px}
+.stat{margin:0}
 .stat b{display:block;font-size:20px;font-variant-numeric:tabular-nums}
-.stat span{font-size:12px;color:var(--muted);text-transform:uppercase;letter-spacing:.04em}
-h2{font-size:16px;margin:0 0 10px}
+.stat span{font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.04em}
+.flash{animation:flash 1s}
+@keyframes flash{0%{background:rgba(34,197,94,.25)}100%{background:var(--panel)}}
+
 table{width:100%;border-collapse:collapse;font-variant-numeric:tabular-nums}
-th,td{text-align:left;padding:7px 6px;border-bottom:1px solid var(--line);font-size:14px}
-th{color:var(--muted);font-weight:600;font-size:12px;text-transform:uppercase;letter-spacing:.04em}
+th,td{text-align:left;padding:8px 6px;border-bottom:1px solid var(--line);font-size:14px}
+th{color:var(--muted);font-weight:600;font-size:11px;text-transform:uppercase;letter-spacing:.04em}
 td.r,th.r{text-align:right}
 tr.hl td{background:rgba(245,158,11,.08)}
-.mini{display:flex;height:8px;border-radius:99px;overflow:hidden;background:var(--line);min-width:80px}
-.flash{animation:flash 1s}
-@keyframes flash{0%{background:rgba(34,197,94,.25)}100%{background:transparent}}
-.proj{margin-bottom:16px;border-color:#3a3f1f;background:linear-gradient(180deg,#171a12,var(--panel))}
-.proj h2{display:flex;justify-content:space-between;gap:8px;flex-wrap:wrap;align-items:baseline}
-.proj h2 small{font-weight:500;color:var(--muted);font-size:12px}
-.proj .verdict{font-size:20px;font-weight:800;margin:4px 0 10px}
-.proj .nums{display:flex;justify-content:space-between;font-variant-numeric:tabular-nums;font-weight:700;margin-bottom:6px}
-.proj .range{position:relative;height:14px;background:var(--line);border-radius:99px;margin:6px 0}
+.mini{display:flex;height:8px;border-radius:99px;overflow:hidden;background:var(--line);min-width:60px}
+
+/* Projeção */
+.proj{border-color:#3a3f1f;background:linear-gradient(180deg,#171a12,var(--panel))}
+.proj .verdict{font-size:20px;font-weight:800;margin:4px 0 12px}
+.proj .nums{display:flex;justify-content:space-between;gap:8px;font-variant-numeric:tabular-nums;font-weight:700;margin-bottom:6px;font-size:15px}
+.proj .range{position:relative;height:14px;background:var(--line);border-radius:99px;margin:10px 0}
 .proj .range .band{position:absolute;top:0;bottom:0;background:rgba(245,158,11,.35);border-radius:99px}
 .proj .range .mid{position:absolute;top:-4px;bottom:-4px;width:2px;background:var(--text);left:50%}
 .proj .range .pt{position:absolute;top:-3px;width:20px;height:20px;margin-left:-10px;border-radius:50%;background:var(--warn);border:3px solid var(--bg)}
-.proj details{margin-top:8px;font-size:13px;color:var(--muted)}
-.proj details summary{cursor:pointer}
-.ad{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;text-align:center;text-decoration:none;color:var(--muted);border:2px dashed var(--line);border-radius:14px;padding:18px 12px;margin-bottom:16px;background:repeating-linear-gradient(135deg,transparent 0 12px,rgba(255,255,255,.02) 12px 24px);transition:border-color .2s,color .2s}
+.how{font-size:13px;color:var(--muted)}
+.how summary{cursor:pointer;color:var(--text)}
+
+/* Mapa do Brasil (grade de estados) */
+.tiles{display:grid;grid-template-columns:repeat(8,1fr);gap:4px;max-width:440px;margin:0 auto 10px}
+.tile{aspect-ratio:1;border-radius:6px;display:flex;flex-direction:column;align-items:center;justify-content:center;font-size:12px;font-weight:800;color:#fff;background:var(--line);line-height:1.1;cursor:pointer;border:2px solid transparent}
+.tile small{font-size:9px;font-weight:600;opacity:.9}
+.tile.sel{border-color:var(--warn)}
+.legend{display:flex;justify-content:center;gap:14px;font-size:12px;color:var(--muted);flex-wrap:wrap}
+.legend i{display:inline-block;width:10px;height:10px;border-radius:3px;margin-right:4px;vertical-align:-1px}
+.ufinfo{text-align:center;font-size:14px;min-height:22px;margin-bottom:6px}
+
+/* Mapa mundial */
+#world{width:100%;height:auto;display:block;background:#0e1420;border-radius:10px}
+#world .land{fill:#1d2638;stroke:#0e1420;stroke-width:.5}
+#world circle{stroke:#0b0f17;stroke-width:.6;cursor:pointer}
+.worldinfo{font-size:14px;min-height:22px;margin:8px 0;text-align:center}
+
+/* Anúncios */
+.ad{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;text-align:center;text-decoration:none;color:var(--muted);border:2px dashed var(--line);border-radius:14px;padding:16px 12px;min-height:84px;margin-bottom:14px;background:repeating-linear-gradient(135deg,transparent 0 12px,rgba(255,255,255,.02) 12px 24px);transition:border-color .2s,color .2s}
 .ad:hover{border-color:var(--warn);color:var(--text)}
-.ad b{font-size:18px;letter-spacing:.08em;color:var(--warn)}
+.ad b{font-size:17px;letter-spacing:.08em;color:var(--warn)}
 .ad span{font-size:12px}
-.ad-wide{min-height:90px}
-.ads2{display:grid;grid-template-columns:1fr 1fr;gap:16px}
-.credit{font-size:14px;color:var(--text);margin-bottom:6px}
-footer{margin-top:20px;font-size:12px;color:var(--muted);text-align:center}
+
+footer{margin-top:6px;font-size:12px;color:var(--muted);text-align:center}
 footer a{color:var(--muted)}
-@media (max-width:720px){
-  .cands,.ads2{grid-template-columns:1fr}
-  .stats{grid-template-columns:repeat(2,1fr)}
-  .cand .pct{font-size:36px}
-  .hide-sm{display:none}
+.credit{font-size:14px;color:var(--text);margin-bottom:4px}
+@media (min-width:720px){
+  .cands{grid-template-columns:1fr 1fr}
+  .stats{grid-template-columns:repeat(4,1fr)}
 }
 </style>
 </head>
 <body>
 <div class="wrap">
   <header>
-    <h1>Apuração Presidente 2026<small>Dados oficiais do TSE, ao vivo · Desenvolvido por Isaque Soares · Xinguara-PA</small></h1>
-    <div style="display:flex;gap:12px;align-items:center;flex-wrap:wrap">
+    <h1>Apuração Presidente 2026<small>Dados oficiais do TSE, ao vivo · Desenvolvido por Isaque Soares</small></h1>
+    <div class="hdr-r">
       <select id="turno" aria-label="Turno">
         <option value="6258">2º turno · 25/10</option>
         <option value="6257">1º turno · 04/10</option>
@@ -95,95 +124,185 @@ footer a{color:var(--muted)}
     </div>
   </header>
 
-  <a class="ad ad-wide" data-ad href="#">
-    <b>ANUNCIE AQUI</b>
-    <span>Sua marca vista por todo mundo que acompanha a apuração</span>
-  </a>
+  <!-- ABA 1: placar e apuração atual -->
+  <main class="tab" id="tab-apuracao">
+    <a class="ad" data-ad href="#"><b>ANUNCIE AQUI</b><span>Sua marca vista por todo mundo que acompanha a apuração</span></a>
 
-  <section class="panel progress" id="progress">
-    <div class="row">
-      <div><span class="big" id="pst">–</span> <span class="muted">das seções apuradas</span></div>
-      <div class="muted" id="upd">–</div>
-    </div>
-    <div class="bar"><i id="pstBar"></i></div>
-    <div class="muted" style="margin-top:6px;font-size:13px" id="secs">–</div>
-  </section>
+    <section class="panel progress" id="progress">
+      <div class="row">
+        <div><span class="big" id="pst">–</span> <span class="muted">das seções apuradas</span></div>
+      </div>
+      <div class="bar"><i id="pstBar"></i></div>
+      <div class="muted" style="margin-top:6px;font-size:13px" id="secs">–</div>
+      <div class="muted" style="font-size:12px" id="upd">–</div>
+    </section>
 
-  <section class="cands" id="cands"></section>
-  <div class="split" id="split"></div>
-  <div class="diff muted" id="diff"></div>
+    <section class="cands" id="cands"></section>
+    <div class="split" id="split"></div>
+    <div class="diff muted" id="diff"></div>
 
-  <section class="panel proj" id="proj" hidden>
-    <h2>Projeção: quem deve ganhar <small>estimativa matemática, não é resultado oficial</small></h2>
-    <div class="verdict" id="projVerdict">–</div>
-    <div class="nums"><span id="projA" style="color:var(--a)">–</span><span id="projB" style="color:var(--b)">–</span></div>
-    <div class="range"><div class="band" id="projBand"></div><div class="mid"></div><div class="pt" id="projPt"></div></div>
-    <div class="muted" style="font-size:13px" id="projNote">–</div>
-    <details>
-      <summary>Como a projeção é calculada</summary>
-      <p>Para cada estado, o site calcula quantos votos ainda faltam apurar (eleitores das seções não apuradas × comparecimento × taxa de votos válidos) e distribui esses votos na proporção que cada candidato está tendo <i>naquele estado</i>. Enquanto um estado tem poucos votos apurados, a proporção é puxada para o resultado dele no 1º turno. Somando todos os estados sai o placar projetado.</p>
-      <p>A faixa amarela mostra o pior e o melhor caso se os votos que faltam em todos os estados virarem alguns pontos para um lado. A faixa fica mais estreita conforme a apuração avança. Quando ela inteira fica de um lado dos 50%, a tendência está consolidada.</p>
-    </details>
-  </section>
+    <section class="stats">
+      <div class="panel stat"><span>Comparecimento</span><b id="comp">–</b><small class="muted" id="compP"></small></div>
+      <div class="panel stat"><span>Abstenção</span><b id="abst">–</b><small class="muted" id="abstP"></small></div>
+      <div class="panel stat"><span>Brancos</span><b id="branc">–</b><small class="muted" id="brancP"></small></div>
+      <div class="panel stat"><span>Nulos</span><b id="nul">–</b><small class="muted" id="nulP"></small></div>
+    </section>
 
-  <div class="ads2">
+    <section class="panel" id="others" hidden>
+      <h2>Demais candidatos</h2>
+      <table><tbody id="othersBody"></tbody></table>
+    </section>
+  </main>
+
+  <!-- ABA 2: projeção -->
+  <main class="tab" id="tab-projecao">
+    <section class="panel proj" id="proj">
+      <h2>Projeção: quem deve ganhar</h2>
+      <div class="muted" style="font-size:12px;margin-top:-6px">Estimativa matemática, não é resultado oficial</div>
+      <div class="verdict" id="projVerdict">Carregando…</div>
+      <div class="nums"><span id="projA" style="color:var(--a)">–</span><span id="projB" style="color:var(--b)">–</span></div>
+      <div class="range"><div class="band" id="projBand"></div><div class="mid"></div><div class="pt" id="projPt"></div></div>
+      <div class="muted" style="font-size:13px" id="projNote">–</div>
+    </section>
+
     <a class="ad" data-ad href="#"><b>ANUNCIE AQUI</b><span>Espaço para patrocinador</span></a>
+
+    <section class="panel how">
+      <details>
+        <summary>Como a projeção é calculada</summary>
+        <p>Para cada estado, o site calcula quantos votos ainda faltam apurar (eleitores das seções não apuradas × comparecimento × taxa de votos válidos) e distribui esses votos na proporção que cada candidato está tendo <i>naquele estado</i>. Enquanto um estado tem poucos votos apurados, a proporção é puxada para o resultado dele no 1º turno. Somando todos os estados sai o placar projetado.</p>
+        <p>A faixa amarela mostra o pior e o melhor caso se os votos que faltam em todos os estados virarem alguns pontos para um lado. Ela fica mais estreita conforme a apuração avança. Quando a faixa inteira fica de um lado dos 50%, a tendência está consolidada.</p>
+      </details>
+    </section>
+  </main>
+
+  <!-- ABA 3: estados / cenário total -->
+  <main class="tab" id="tab-estados">
+    <section class="panel">
+      <h2>Mapa do Brasil</h2>
+      <div class="ufinfo" id="ufInfo">Toque em um estado</div>
+      <div class="tiles" id="tiles"></div>
+      <div class="legend" id="legend"></div>
+    </section>
+
     <a class="ad" data-ad href="#"><b>ANUNCIE AQUI</b><span>Espaço para patrocinador</span></a>
-  </div>
 
-  <section class="panel others" id="others" hidden>
-    <h2>Demais candidatos</h2>
-    <table><tbody id="othersBody"></tbody></table>
-  </section>
+    <section class="panel">
+      <h2>Por estado</h2>
+      <table>
+        <thead><tr><th>UF</th><th class="r">Apurado</th><th id="hA">–</th><th id="hB">–</th><th>Placar</th></tr></thead>
+        <tbody id="ufs"></tbody>
+      </table>
+    </section>
+  </main>
 
-  <section class="stats">
-    <div class="panel stat"><span>Comparecimento</span><b id="comp">–</b><small class="muted" id="compP"></small></div>
-    <div class="panel stat"><span>Abstenção</span><b id="abst">–</b><small class="muted" id="abstP"></small></div>
-    <div class="panel stat"><span>Brancos</span><b id="branc">–</b><small class="muted" id="brancP"></small></div>
-    <div class="panel stat"><span>Nulos</span><b id="nul">–</b><small class="muted" id="nulP"></small></div>
-  </section>
+  <!-- ABA 4: mundo -->
+  <main class="tab" id="tab-mundo">
+    <section class="panel">
+      <h2>Votos no exterior</h2>
+      <div class="row muted" style="font-size:13px;margin-bottom:8px" id="zzResumo">–</div>
+      <svg id="world" viewBox="0 0 960 500" role="img" aria-label="Mapa mundial com os votos dos brasileiros no exterior"></svg>
+      <div class="worldinfo" id="worldInfo">Toque em uma bolinha para ver a cidade</div>
+      <div class="legend" id="legendW"></div>
+    </section>
 
-  <section class="panel">
-    <h2>Por estado</h2>
-    <table>
-      <thead><tr><th>UF</th><th class="r">Apurado</th><th id="hA">–</th><th id="hB">–</th><th class="hide-sm">Placar</th></tr></thead>
-      <tbody id="ufs"></tbody>
-    </table>
-  </section>
+    <a class="ad" data-ad href="#"><b>ANUNCIE AQUI</b><span>Espaço para patrocinador</span></a>
 
-  <a class="ad ad-wide" data-ad href="#">
-    <b>ANUNCIE AQUI</b>
-    <span>Espaço para patrocinador · rodapé</span>
-  </a>
+    <section class="panel">
+      <h2>Por país</h2>
+      <table>
+        <thead><tr><th>País</th><th class="r">Votos</th><th id="wA">–</th><th id="wB">–</th></tr></thead>
+        <tbody id="paises"></tbody>
+      </table>
+    </section>
+  </main>
 
   <footer>
     <div class="credit">Desenvolvido por <b>Isaque Soares</b> · Xinguara-PA</div>
-    Fonte: <a href="https://resultados.tse.jus.br" target="_blank" rel="noopener">resultados.tse.jus.br</a> (mesma base usada pelas TVs e pelo app do TSE).
-    Atualiza o placar nacional a cada 5 s e os estados a cada 20 s.
+    Fonte: <a href="https://resultados.tse.jus.br" target="_blank" rel="noopener">resultados.tse.jus.br</a> · placar nacional a cada 5 s, estados a cada 20 s.
   </footer>
 </div>
+
+<nav class="bottom" aria-label="Seções">
+  <button data-tab="apuracao"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 20V10M10 20V4M16 20v-7M22 20H2"/></svg>Apuração</button>
+  <button data-tab="projecao"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 17l6-6 4 4 8-8"/><path d="M15 7h6v6"/></svg>Projeção</button>
+  <button data-tab="estados"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/></svg>Estados</button>
+  <button data-tab="mundo"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3a14 14 0 0 1 0 18M12 3a14 14 0 0 0 0 18"/></svg>Mundo</button>
+</nav>
 
 <script>
 const BASE = 'https://resultados.tse.jus.br/oficial/ele2026';
 const UFS = ['ac','al','am','ap','ba','ce','df','es','go','ma','mg','ms','mt','pa','pb','pe','pi','pr','rj','rn','ro','rr','rs','sc','se','sp','to','zz'];
 const UF_NOME = {zz:'Exterior'};
-const NATIONAL_MS = 5000, STATES_MS = 20000;
-// Link dos espaços "Anuncie aqui" (ex.: 'https://wa.me/5594999999999'). Vazio = sem link.
-const AD_CONTATO = '';
+const NATIONAL_MS = 5000, STATES_MS = 20000, WORLD_MS = 60000;
+// WhatsApp dos espaços "Anuncie aqui": só números, com 55 + DDD (ex.: '5594999999999'). Vazio = sem link.
+const AD_WHATSAPP = '';
+const AD_MENSAGEM = 'Quero anunciar no site de apuração';
 const ELE_1T = '6257'; // usado como ponto de partida da projeção do 2º turno
 
-let ele = '6258', lastIdg = null, ufData = {}, order = [], prior = null;
-let natTimer, ufTimer, lastOk = 0;
+// Posição de cada estado na grade do mapa [coluna, linha]
+const GRID = {rr:[2,0],ap:[4,0],am:[1,1],pa:[3,1],ma:[4,1],ce:[5,1],rn:[6,1],ac:[0,2],ro:[1,2],mt:[2,2],to:[3,2],pi:[4,2],pe:[5,2],pb:[6,2],
+  ms:[2,3],go:[3,3],ba:[4,3],se:[5,3],al:[6,3],sp:[2,4],df:[3,4],mg:[4,4],es:[5,4],pr:[2,5],rj:[3,5],sc:[2,6],rs:[2,7]};
+
+// Cidades do exterior (código TSE) → [latitude, longitude, país]
+const CIDADES = {
+29254:[5.3,-4,'Costa do Marfim'],29262:[24.5,54.4,'Emirados Árabes'],99198:[9.1,7.5,'Nigéria'],29270:[5.6,-.2,'Gana'],99325:[9,38.7,'Etiópia'],
+30457:[52.4,4.9,'Holanda'],29289:[31.9,35.9,'Jordânia'],29297:[39.9,32.9,'Turquia'],29300:[36.8,3.1,'Argélia'],29319:[-30.4,-56.5,'Uruguai'],
+29327:[-25.3,-57.6,'Paraguai'],39241:[51.2,71.4,'Cazaquistão'],29335:[38,23.7,'Grécia'],39080:[33.7,-84.4,'Estados Unidos'],99171:[33.3,44.4,'Iraque'],
+39128:[40.4,49.9,'Azerbaijão'],99350:[12.6,-8,'Mali'],29343:[13.8,100.5,'Tailândia'],29351:[41.4,2.2,'Espanha'],99473:[26.2,50.6,'Bahrein'],
+29360:[33.9,35.5,'Líbano'],29378:[44.8,20.5,'Sérvia'],38881:[17.3,-88.8,'Belize'],29386:[52.5,13.4,'Alemanha'],29394:[11.9,-15.6,'Guiné-Bissau'],
+29408:[4.7,-74.1,'Colômbia'],29416:[42.4,-71.1,'Estados Unidos'],39209:[48.1,17.1,'Eslováquia'],39187:[-4.3,15.3,'Congo'],29424:[13.1,-59.6,'Barbados'],
+29432:[50.8,4.4,'Bélgica'],29440:[44.4,26.1,'Romênia'],29459:[47.5,19,'Hungria'],29467:[-34.6,-58.4,'Argentina'],29475:[4.9,-52.3,'Guiana Francesa'],
+29483:[30,31.2,'Egito'],29491:[-35.3,149.1,'Austrália'],30651:[23.1,113.3,'China'],29505:[10.5,-66.9,'Venezuela'],99384:[14,-61,'Santa Lúcia'],
+29513:[41.9,-87.6,'Estados Unidos'],29521:[-33.7,-53.5,'Uruguai'],29530:[-33.9,18.4,'África do Sul'],29556:[-25.5,-54.6,'Paraguai'],29564:[8.3,-62.7,'Venezuela'],
+99210:[-11,-68.8,'Bolívia'],29572:[-17.4,-66.2,'Bolívia'],30929:[6.9,79.9,'Sri Lanka'],38903:[9.6,-13.6,'Guiné'],29580:[-23.4,-57.4,'Paraguai'],
+29599:[55.7,12.6,'Dinamarca'],38920:[6.4,2.4,'Benin'],29602:[-31.4,-64.2,'Argentina'],29610:[14.7,-17.5,'Senegal'],29629:[23.8,90.4,'Bangladesh'],
+29637:[33.5,36.3,'Síria'],38962:[-6.8,39.3,'Tanzânia'],29653:[25.3,51.5,'Catar'],29661:[53.3,-6.3,'Irlanda'],29645:[-8.6,125.6,'Timor-Leste'],
+99503:[55.9,-3.2,'Reino Unido'],29670:[-27.3,-55.9,'Paraguai'],29688:[59.3,18.1,'Suécia'],30961:[37,-7.9,'Portugal'],29696:[50.1,8.7,'Alemanha'],
+30669:[-24.7,25.9,'Botsuana'],29700:[46.2,6.1,'Suíça'],29718:[6.8,-58.2,'Guiana'],98000:[14.6,-90.5,'Guatemala'],29742:[34.7,137.7,'Japão'],
+29750:[21,105.8,'Vietnã'],29769:[-17.8,31,'Zimbábue'],30902:[41.8,-72.7,'Estados Unidos'],29777:[23.1,-82.4,'Cuba'],29785:[60.2,24.9,'Finlândia'],
+29793:[22.3,114.2,'China'],29807:[29.8,-95.4,'Estados Unidos'],29815:[3.9,11.5,'Camarões'],38989:[40.2,44.5,'Armênia'],29823:[-3.7,-73.3,'Peru'],
+29831:[33.7,73,'Paquistão'],39306:[41,29,'Turquia'],29840:[-6.2,106.8,'Indonésia'],29173:[27.7,85.3,'Nepal'],29858:[50.5,30.5,'Ucrânia'],
+99430:[18,-76.8,'Jamaica'],29874:[-4.3,15.3,'RD Congo'],29882:[29.4,48,'Kuwait'],29890:[3.1,101.7,'Malásia'],29904:[-16.5,-68.1,'Bolívia'],
+29912:[6.5,3.4,'Nigéria'],29939:[.4,9.5,'Gabão'],99341:[-14,33.8,'Malaui'],29947:[-12,-77,'Peru'],29955:[38.7,-9.1,'Portugal'],
+39160:[46.1,14.5,'Eslovênia'],29963:[6.1,1.2,'Togo'],29971:[51.5,-.1,'Reino Unido'],29980:[34.1,-118.2,'Estados Unidos'],29998:[-8.8,13.2,'Angola'],
+99287:[-15.4,28.3,'Zâmbia'],30066:[40.4,-3.7,'Espanha'],39263:[3.8,8.8,'Guiné Equatorial'],30082:[14.6,121,'Filipinas'],30074:[12.1,-86.3,'Nicarágua'],
+30090:[-26,32.6,'Moçambique'],99511:[43.3,5.4,'França'],39102:[23.6,58.4,'Omã'],39004:[-32.9,-68.8,'Argentina'],30104:[19.4,-99.1,'México'],
+30112:[25.8,-80.2,'Estados Unidos'],30120:[45.5,9.2,'Itália'],30147:[-34.9,-56.2,'Uruguai'],30155:[45.5,-73.6,'Canadá'],30163:[55.8,37.6,'Rússia'],
+30171:[19.1,72.9,'Índia'],30180:[48.1,11.6,'Alemanha'],30198:[35.2,136.9,'Japão'],30201:[-1.3,36.8,'Quênia'],99180:[25,-77.3,'Bahamas'],
+39322:[35.2,33.4,'Chipre'],30210:[28.6,77.2,'Índia'],30228:[40.7,-74,'Estados Unidos'],99490:[28.5,-81.4,'Estados Unidos'],30244:[59.9,10.7,'Noruega'],
+30252:[45.4,-75.7,'Canadá'],30260:[9,-79.5,'Panamá'],30279:[5.9,-55.2,'Suriname'],30287:[48.9,2.3,'França'],30295:[-29.7,-57.1,'Argentina'],
+30309:[-22.5,-55.7,'Paraguai'],30317:[39.9,116.4,'China'],30325:[10.7,-61.5,'Trinidad e Tobago'],30341:[41.2,-8.6,'Portugal'],30333:[18.5,-72.3,'Haiti'],
+30350:[50.1,14.4,'Tchéquia'],30368:[14.9,-23.5,'Cabo Verde'],30376:[-25.7,28.2,'África do Sul'],99155:[-25.6,-54.6,'Argentina'],99236:[-19,-57.7,'Bolívia'],
+99295:[39,125.8,'Coreia do Norte'],30392:[-.2,-78.5,'Equador'],30406:[34,-6.8,'Marrocos'],30414:[31.9,35.2,'Palestina'],30422:[24.7,46.7,'Arábia Saudita'],
+30430:[-32.6,-53.4,'Uruguai'],99244:[-30.9,-55.6,'Uruguai'],30449:[41.9,12.5,'Itália'],99147:[17.1,-61.8,'Antígua e Barbuda'],30465:[-24.1,-54.3,'Paraguai'],
+30473:[-17.8,-63.2,'Bolívia'],30481:[-33.4,-70.7,'Chile'],30988:[43.9,18.4,'Bósnia'],30538:[37.6,127,'Coreia do Sul'],29548:[1.4,103.8,'Singapura'],
+99279:[4.6,-61.1,'Venezuela'],99333:[3.9,-51.8,'Guiana Francesa'],30562:[-33.9,151.2,'Austrália'],30490:[18.5,-69.9,'Rep. Dominicana'],30503:[37.8,-122.4,'Estados Unidos'],
+30511:[9.9,-84.1,'Costa Rica'],30520:[13.7,-89.2,'El Salvador'],39225:[.3,6.7,'São Tomé e Príncipe'],30546:[42.7,23.3,'Bulgária'],30570:[25,121.5,'Taiwan'],
+99317:[59.4,24.8,'Estônia'],99104:[41.7,44.8,'Geórgia'],30597:[35.7,51.4,'Irã'],30600:[14.1,-87.2,'Honduras'],30619:[32.1,34.8,'Israel'],
+99139:[41.3,19.8,'Albânia'],30635:[43.7,-79.4,'Canadá'],30686:[32.9,13.2,'Líbia'],30708:[36.8,10.2,'Tunísia'],30627:[35.7,139.7,'Japão'],
+39284:[12.4,-1.5,'Burkina Faso'],39063:[49.3,-123.1,'Canadá'],30740:[52.2,21,'Polônia'],30767:[48.2,16.4,'Áustria'],30783:[38.9,-77,'Estados Unidos'],
+30805:[-41.3,174.8,'Nova Zelândia'],30821:[-22.6,17.1,'Namíbia'],30848:[31.2,121.5,'China'],99376:[16.8,96.2,'Mianmar'],39020:[45.8,16,'Croácia'],
+30864:[47.4,8.5,'Suíça']};
+
+let ele = '6258', lastIdg = null, ufData = {}, order = [], prior = null, nomesCidade = null;
+let cityData = {}, worldLoaded = null, worldTimer = null, selUF = null;
+let natTimer, ufTimer, lastOk = 0, tab = 'apuracao';
 
 const $ = id => document.getElementById(id);
 const num = s => Number(String(s ?? 0).replace(/\./g,'').replace(',', '.')) || 0;
 const fmt = n => n.toLocaleString('pt-BR');
 const pct = s => (s ?? '0,00') + '%';
+const pc2 = x => x.toFixed(2).replace('.', ',');
+const pc1 = x => x.toFixed(1).replace('.', ',');
+const clamp = (x,a,b) => Math.min(b, Math.max(a, x));
 const COLORS = ['var(--a)','var(--b)'];
+const HEX = ['#e23b3b','#2f6fe0'];
 
+// abr = 'br', uma UF ('pa') ou UF + código do município ('zz30228'); a pasta é sempre a UF
 function url(abr, el = ele){
   const e = el.padStart(6,'0');
-  return `${BASE}/${el}/dados/${abr}/${abr}-c0001-e${e}-u.json`;
+  return `${BASE}/${el}/dados/${abr.slice(0,2)}/${abr}-c0001-e${e}-u.json`;
 }
 
 async function getJSON(u){
@@ -199,7 +318,19 @@ function candidates(d){
     out.push({n:c.n, sq:c.sqcand, nm:c.nmu, partido:p.sg, votos:num(c.vap), pct:c.pvap, e:c.e, eleito:c.e==='s' && /^eleito/i.test(c.st), st:c.st});
   return out;
 }
+const votosDe = d => Object.fromEntries(candidates(d).map(c=>[c.n,c.votos]));
 
+// Cor do mapa: cor do líder, mais forte quanto maior a vantagem
+function corLider(vA, vB){
+  const t = vA + vB;
+  if(!t) return 'var(--line)';
+  const m = Math.abs(vA - vB)/t;              // 0..1
+  const alpha = 0.35 + 0.65*clamp(m/0.4, 0, 1);
+  const [r,g,b] = vA >= vB ? [226,59,59] : [47,111,224];
+  return `rgba(${r},${g},${b},${alpha.toFixed(2)})`;
+}
+
+/* ---------- Apuração ---------- */
 function renderNational(d){
   const cs = candidates(d).sort((x,y)=>y.votos-x.votos || x.n-y.n);
   // Mantém a ordem dos cartões estável (pelo número do candidato) até haver votos
@@ -211,7 +342,7 @@ function renderNational(d){
   $('pst').textContent = pct(s.pst);
   $('pstBar').style.width = num(s.pst) + '%';
   $('secs').textContent = `${fmt(num(s.st))} de ${fmt(num(s.ts))} seções · ${fmt(num(e.te))} eleitores`;
-  $('upd').textContent = d.hg && d.dt ? `TSE: ${d.dt} ${d.ht}` : `Arquivo TSE: ${d.dg} ${d.hg}`;
+  $('upd').textContent = d.dt ? `Totalizado pelo TSE: ${d.dt} ${d.ht}` : `Arquivo TSE: ${d.dg} ${d.hg}`;
 
   $('cands').innerHTML = top.map((c,i)=>`
     <div class="panel cand" style="--c:${COLORS[i]}">
@@ -227,7 +358,7 @@ function renderNational(d){
   const pa = top[0].votos / vv * 100, pb = top[1].votos / vv * 100;
   $('split').innerHTML = `<i style="width:${pa}%;background:var(--a)"></i><i style="flex:1"></i><i style="width:${pb}%;background:var(--b)"></i>`;
   const dif = top[0].votos - top[1].votos;
-  $('diff').textContent = num(v.vv) ? `Diferença: ${fmt(Math.abs(dif))} votos (${(Math.abs(pa-pb)).toFixed(2).replace('.',',')} p.p.)` : 'Aguardando os primeiros votos…';
+  $('diff').textContent = num(v.vv) ? `Diferença: ${fmt(Math.abs(dif))} votos (${pc2(Math.abs(pa-pb))} p.p.)` : 'Aguardando os primeiros votos…';
 
   const rest = cs.filter(c=>!top.includes(c));
   $('others').hidden = !rest.length;
@@ -238,22 +369,25 @@ function renderNational(d){
   $('branc').textContent = fmt(num(v.vb)); $('brancP').textContent = pct(v.pvb) + ' do total';
   $('nul').textContent = fmt(num(v.tvn)); $('nulP').textContent = pct(v.ptvn) + ' do total';
 
-  $('hA').textContent = top[0].nm; $('hB').textContent = top[1].nm;
-  $('hA').style.color = 'var(--a)'; $('hB').style.color = 'var(--b)';
   window.__top = top.map(c=>c.n);
+  window.__nomes = top.map(c=>c.nm);
+  for(const [id,i] of [['hA',0],['hB',1],['wA',0],['wB',1]]){ $(id).textContent = top[i].nm; $(id).style.color = COLORS[i]; }
+  const leg = `<span><i style="background:var(--a)"></i>${top[0].nm}</span><span><i style="background:var(--b)"></i>${top[1].nm}</span><span><i style="background:var(--line)"></i>sem votos</span>`;
+  $('legend').innerHTML = leg; $('legendW').innerHTML = leg;
 
   document.title = num(v.vv)
     ? `${top[0].nm} ${top[0].pct}% x ${top[1].pct}% ${top[1].nm} · ${s.pst}% apurado`
     : 'Apuração Presidente 2026';
 }
 
+/* ---------- Estados ---------- */
 function renderStates(){
   const top = window.__top; if(!top) return;
   const rows = UFS.filter(u=>ufData[u]).map(u=>{
     const d = ufData[u], cs = Object.fromEntries(candidates(d).map(c=>[c.n,c]));
     const a = cs[top[0]], b = cs[top[1]];
     const tot = (a?.votos||0)+(b?.votos||0) || 1;
-    return {u, pst:num(d.s.pst), pstS:d.s.pst, a, b, wa:(a?.votos||0)/tot*100, wb:(b?.votos||0)/tot*100};
+    return {u, pstS:d.s.pst, a, b, wa:(a?.votos||0)/tot*100, wb:(b?.votos||0)/tot*100};
   });
   $('ufs').innerHTML = rows.map(r=>`
     <tr class="${r.u==='pa'?'hl':''}">
@@ -261,11 +395,41 @@ function renderStates(){
       <td class="r">${r.pstS}%</td>
       <td>${r.a?pct(r.a.pct):'–'}</td>
       <td>${r.b?pct(r.b.pct):'–'}</td>
-      <td class="hide-sm"><div class="mini"><i style="width:${r.wa}%;background:var(--a)"></i><i style="width:${r.wb}%;background:var(--b)"></i></div></td>
+      <td><div class="mini"><i style="width:${r.wa}%;background:var(--a)"></i><i style="width:${r.wb}%;background:var(--b)"></i></div></td>
     </tr>`).join('');
+  renderTiles();
   renderProjection();
+  if(tab === 'mundo') renderWorld();
 }
 
+function renderTiles(){
+  const top = window.__top; if(!top) return;
+  let html = '';
+  for(const [u,[x,y]] of Object.entries(GRID)){
+    const d = ufData[u];
+    const v = d ? votosDe(d) : {};
+    const vA = v[top[0]]||0, vB = v[top[1]]||0, t = vA+vB;
+    const lead = t ? pc1(Math.max(vA,vB)/t*100) + '%' : '';
+    html += `<div class="tile${selUF===u?' sel':''}" data-uf="${u}" style="grid-column:${x+1};grid-row:${y+1};background:${corLider(vA,vB)}">${u.toUpperCase()}<small>${lead}</small></div>`;
+  }
+  $('tiles').innerHTML = html;
+  if(selUF) showUF(selUF);
+}
+
+function showUF(u){
+  selUF = u;
+  const d = ufData[u], top = window.__top, nm = window.__nomes;
+  if(!d || !top){ $('ufInfo').textContent = u.toUpperCase(); return; }
+  const v = votosDe(d), vA = v[top[0]]||0, vB = v[top[1]]||0, t = vA+vB||1;
+  $('ufInfo').innerHTML = `<b>${u.toUpperCase()}</b> · ${d.s.pst}% apurado · <span style="color:var(--a)">${nm[0]} ${pc2(vA/t*100)}%</span> × <span style="color:var(--b)">${pc2(vB/t*100)}% ${nm[1]}</span>`;
+}
+
+$('tiles').addEventListener('click', e=>{
+  const t = e.target.closest('.tile'); if(!t) return;
+  selUF = t.dataset.uf; renderTiles();
+});
+
+/* ---------- Projeção ---------- */
 // Resultado do 1º turno por estado: proporção entre os dois finalistas, comparecimento e votos válidos
 async function loadPrior(){
   if(prior) return;
@@ -274,18 +438,21 @@ async function loadPrior(){
     try{
       const d = await getJSON(url(u, ELE_1T));
       const c = num(d.e.c), te = num(d.e.te);
-      p[u] = {votos:Object.fromEntries(candidates(d).map(x=>[x.n,x.votos])), turnout: te ? c/te : 0.79, valid: c ? num(d.v.vv)/c : 0.94};
+      p[u] = {votos:votosDe(d), turnout: te ? c/te : 0.79, valid: c ? num(d.v.vv)/c : 0.94};
     }catch{}
   }));
   prior = p;
 }
 
-const clamp = (x,a,b) => Math.min(b, Math.max(a, x));
-const pc2 = x => x.toFixed(2).replace('.', ',');
-
 function renderProjection(){
   const top = window.__top;
-  if(ele !== '6258' || !top || !prior){ $('proj').hidden = true; return; }
+  if(ele !== '6258'){
+    $('projVerdict').textContent = 'A projeção é feita para o 2º turno.';
+    $('projA').textContent = $('projB').textContent = '';
+    $('projNote').textContent = 'Troque para "2º turno" no topo da página.';
+    return;
+  }
+  if(!top || !prior) return;
   const [A, B] = top;
   let pA = 0, pB = 0, minA = 0, maxA = 0, falta = 0, apurado = 0, ufsOk = 0;
 
@@ -293,7 +460,7 @@ function renderProjection(){
     const d = ufData[u]; if(!d) continue;
     ufsOk++;
     const p = prior[u] || {};
-    const cs = Object.fromEntries(candidates(d).map(c=>[c.n,c.votos]));
+    const cs = votosDe(d);
     const vA = cs[A] || 0, vB = cs[B] || 0;
     const est = num(d.e.est), esnt = num(d.e.esnt), c = num(d.e.c), vv = num(d.v.vv);
 
@@ -318,12 +485,12 @@ function renderProjection(){
     maxA += vA + R*clamp(share+s, 0, 1);
     falta += R; apurado += vA + vB;
   }
-  if(!ufsOk){ $('proj').hidden = true; return; }
+  if(!ufsOk) return;
 
   const tot = pA + pB || 1;
   const sA = pA/tot*100, sB = pB/tot*100;
   const lo = minA/tot*100, hi = maxA/tot*100;
-  const nA = $('hA').textContent, nB = $('hB').textContent;
+  const [nA, nB] = window.__nomes;
   const lider = sA >= sB ? nA : nB, cor = sA >= sB ? 'var(--a)' : 'var(--b)';
   const apuradoPct = apurado/(apurado+falta||1)*100;
 
@@ -333,7 +500,6 @@ function renderProjection(){
   else if(hi < 50) verdict = `Tendência consolidada: <span style="color:var(--b)">${nB}</span> deve vencer`;
   else verdict = `Disputa em aberto · <span style="color:${cor}">${lider}</span> leva vantagem na projeção`;
 
-  $('proj').hidden = false;
   $('projVerdict').innerHTML = verdict;
   $('projA').textContent = `${nA} ${pc2(sA)}%`;
   $('projB').textContent = `${pc2(sB)}% ${nB}`;
@@ -345,11 +511,92 @@ function renderProjection(){
     : `Faixa provável para ${nA}: ${pc2(lo)}% a ${pc2(hi)}% · cerca de ${fmt(Math.round(falta))} votos válidos ainda por apurar (${pc2(100-apuradoPct)}% do total estimado).`;
 }
 
+/* ---------- Mundo ---------- */
+function loadScript(src){
+  return new Promise((ok, err)=>{ const s = document.createElement('script'); s.src = src; s.onload = ok; s.onerror = err; document.head.appendChild(s); });
+}
+
+// Carrega d3 + contorno dos países só quando a aba Mundo é aberta
+async function loadWorld(){
+  if(worldLoaded) return worldLoaded;
+  worldLoaded = (async()=>{
+    await loadScript('https://cdn.jsdelivr.net/npm/d3@7.9.0/dist/d3.min.js');
+    await loadScript('https://cdn.jsdelivr.net/npm/topojson-client@3.1.0/dist/topojson-client.min.js');
+    const [topo, cfg] = await Promise.all([
+      fetch('https://cdn.jsdelivr.net/npm/world-atlas@2.0.2/countries-110m.json').then(r=>r.json()),
+      getJSON(`${BASE}/${ele}/config/mun-e${ele.padStart(6,'0')}-cm.json`).catch(()=>null)
+    ]);
+    nomesCidade = {};
+    const zz = cfg?.abr.find(a=>a.cd==='zz');
+    for(const m of zz?.mu || []) nomesCidade[m.cd] = m.nm;
+    const proj = d3.geoNaturalEarth1().fitExtent([[8,8],[952,492]], {type:'Sphere'});
+    const path = d3.geoPath(proj);
+    const land = topojson.feature(topo, topo.objects.countries);
+    const svg = d3.select('#world');
+    svg.append('g').selectAll('path').data(land.features).join('path').attr('class','land').attr('d', path);
+    svg.append('g').attr('id','dots');
+    window.__proj = proj;
+  })();
+  return worldLoaded;
+}
+
+async function tickWorld(){
+  const codes = Object.keys(CIDADES);
+  const el = ele;
+  // 186 arquivos: busca em lotes para não sobrecarregar o celular
+  for(let i = 0; i < codes.length; i += 24){
+    await Promise.all(codes.slice(i, i+24).map(async cd=>{
+      try{ const d = await getJSON(url('zz'+cd, el)); if(el === ele) cityData[cd] = d; }catch{}
+    }));
+  }
+  renderWorld();
+}
+
+function renderWorld(){
+  const top = window.__top, nm = window.__nomes;
+  const zz = ufData.zz;
+  if(zz){
+    $('zzResumo').textContent = `${zz.s.pst}% das seções do exterior apuradas · ${fmt(num(zz.e.te))} eleitores no exterior · ${Object.keys(CIDADES).length} cidades`;
+  }
+  if(!top || !window.__proj) return;
+
+  const cities = Object.entries(cityData).map(([cd,d])=>{
+    const v = votosDe(d), [lat,lon,pais] = CIDADES[cd];
+    return {cd, lat, lon, pais, nome:nomesCidade?.[cd] || cd, vA:v[top[0]]||0, vB:v[top[1]]||0, te:num(d.e.te), pst:d.s.pst};
+  });
+  const maxTe = Math.max(1, ...cities.map(c=>c.te));
+  d3.select('#dots').selectAll('circle').data(cities, c=>c.cd).join('circle')
+    .attr('cx', c=>window.__proj([c.lon,c.lat])[0])
+    .attr('cy', c=>window.__proj([c.lon,c.lat])[1])
+    .attr('r', c=>2.5 + 14*Math.sqrt(c.te/maxTe))
+    .attr('fill', c=>c.vA+c.vB ? corLider(c.vA,c.vB) : 'rgba(138,150,173,.45)')
+    .on('click', (ev,c)=>{
+      const t = c.vA+c.vB || 1;
+      $('worldInfo').innerHTML = `<b>${c.nome}</b> (${c.pais}) · ${fmt(c.te)} eleitores · ${c.pst}% apurado<br>`+
+        `<span style="color:var(--a)">${nm[0]} ${fmt(c.vA)} (${pc1(c.vA/t*100)}%)</span> × <span style="color:var(--b)">${fmt(c.vB)} (${pc1(c.vB/t*100)}%) ${nm[1]}</span>`;
+    });
+
+  // Soma por país
+  const paises = {};
+  for(const c of cities){
+    const p = paises[c.pais] ||= {vA:0, vB:0, te:0};
+    p.vA += c.vA; p.vB += c.vB; p.te += c.te;
+  }
+  $('paises').innerHTML = Object.entries(paises).sort((a,b)=>b[1].te-a[1].te).map(([nome,p])=>{
+    const t = p.vA+p.vB;
+    return `<tr><td>${nome}</td><td class="r">${fmt(t)}</td>
+      <td style="color:${t&&p.vA>p.vB?'var(--a)':'inherit'}">${t?pc1(p.vA/t*100)+'%':'–'}</td>
+      <td style="color:${t&&p.vB>p.vA?'var(--b)':'inherit'}">${t?pc1(p.vB/t*100)+'%':'–'}</td></tr>`;
+  }).join('');
+}
+
+/* ---------- Ciclo de atualização ---------- */
 function setLive(ok, txt){
   $('dot').className = 'dot ' + (ok ? 'on' : 'err');
   $('liveTxt').textContent = txt;
 }
 
+let liveBase = 'ao vivo';
 async function tickNational(){
   try{
     const d = await getJSON(url('br'));
@@ -358,9 +605,10 @@ async function tickNational(){
       const first = lastIdg === null;
       lastIdg = d.idg;
       renderNational(d); renderStates();
-      if(!first) $('progress').classList.remove('flash'), void $('progress').offsetWidth, $('progress').classList.add('flash');
+      if(!first){ const p = $('progress'); p.classList.remove('flash'); void p.offsetWidth; p.classList.add('flash'); }
     }
-    setLive(true, d.tf==='s' ? 'totalização encerrada' : 'ao vivo');
+    liveBase = d.tf==='s' ? 'totalização encerrada' : 'ao vivo';
+    setLive(true, liveBase);
   }catch(err){
     setLive(false, 'sem conexão com o TSE, tentando de novo…');
   }
@@ -374,28 +622,55 @@ async function tickStates(){
 }
 
 setInterval(()=>{
-  if(!lastOk) return;
-  const s = Math.round((Date.now()-lastOk)/1000);
-  if($('dot').classList.contains('on')) $('liveTxt').textContent = ($('liveTxt').textContent.startsWith('totaliz') ? 'totalização encerrada' : 'ao vivo') + ` · checado há ${s}s`;
+  if(!lastOk || !$('dot').classList.contains('on')) return;
+  $('liveTxt').textContent = `${liveBase} · checado há ${Math.round((Date.now()-lastOk)/1000)}s`;
 }, 1000);
 
+function startWorld(){
+  clearInterval(worldTimer);
+  loadWorld().then(tickWorld).catch(()=>{ $('worldInfo').textContent = 'Não foi possível carregar o mapa.'; });
+  worldTimer = setInterval(tickWorld, WORLD_MS);
+}
+
 function start(){
-  clearInterval(natTimer); clearInterval(ufTimer);
-  lastIdg = null; ufData = {}; order = []; window.__top = null;
-  $('ufs').innerHTML = '';
-  $('proj').hidden = true;
+  clearInterval(natTimer); clearInterval(ufTimer); clearInterval(worldTimer);
+  lastIdg = null; ufData = {}; order = []; cityData = {}; window.__top = null;
+  $('ufs').innerHTML = ''; $('paises').innerHTML = '';
+  if(window.d3) d3.select('#dots').selectAll('circle').remove();
   tickNational().then(()=>Promise.all([tickStates(), ele === '6258' ? loadPrior() : null])).then(renderStates);
   natTimer = setInterval(tickNational, NATIONAL_MS);
   ufTimer = setInterval(tickStates, STATES_MS);
+  if(tab === 'mundo') startWorld();
 }
 
+/* ---------- Abas ---------- */
+function showTab(t){
+  if(!$('tab-'+t)) t = 'apuracao';
+  tab = t;
+  document.querySelectorAll('.tab').forEach(el=>el.classList.toggle('on', el.id === 'tab-'+t));
+  document.querySelectorAll('nav.bottom button').forEach(b=>{
+    const on = b.dataset.tab === t;
+    b.classList.toggle('on', on);
+    on ? b.setAttribute('aria-current','page') : b.removeAttribute('aria-current');
+  });
+  if(t === 'mundo' && !worldTimer) startWorld();
+  if(t !== 'mundo'){ clearInterval(worldTimer); worldTimer = null; }
+  window.scrollTo(0, 0);
+}
+document.querySelectorAll('nav.bottom button').forEach(b=>b.addEventListener('click', ()=>{
+  history.replaceState(null, '', '#' + b.dataset.tab);
+  showTab(b.dataset.tab);
+}));
+window.addEventListener('hashchange', ()=>showTab(location.hash.slice(1)));
+
 document.querySelectorAll('[data-ad]').forEach(a=>{
-  if(AD_CONTATO){ a.href = AD_CONTATO; a.target = '_blank'; a.rel = 'noopener'; }
+  if(AD_WHATSAPP){ a.href = `https://wa.me/${AD_WHATSAPP}?text=${encodeURIComponent(AD_MENSAGEM)}`; a.target = '_blank'; a.rel = 'noopener'; }
   else a.addEventListener('click', e=>e.preventDefault());
 });
 
 $('turno').addEventListener('change', e=>{ ele = e.target.value; start(); });
 document.addEventListener('visibilitychange', ()=>{ if(!document.hidden) tickNational(); });
+showTab(location.hash.slice(1) || 'apuracao');
 start();
 </script>
 </body>
