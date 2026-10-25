@@ -139,6 +139,46 @@ tr.hl td{background:var(--hl)}
 .toast.show{transform:none;opacity:1;pointer-events:auto}
 .toast.virada{background:var(--text);color:var(--bg);border-color:var(--text);font-size:16px;font-weight:700}
 
+/* Placar compacto (topo da Apuração) */
+.score{margin:0 -16px 12px;padding:4px 16px 14px;border-bottom:1px solid var(--line)}
+.manchete{text-align:center;font-size:17px;font-weight:600;letter-spacing:-.01em;min-height:26px;margin-bottom:10px}
+.manchete.nova{animation:entra .6s cubic-bezier(.2,.8,.2,1)}
+@keyframes entra{from{opacity:0;transform:translateY(-10px)}to{opacity:1;transform:none}}
+.manchete .q{color:var(--c)}
+.sc-top{display:flex;justify-content:space-between;align-items:flex-end;margin-bottom:8px}
+.sc-c{display:flex;align-items:center;gap:10px}
+.sc-c.dir{flex-direction:row-reverse;text-align:right}
+.sc-c img{width:52px;height:52px;border-radius:10px;object-fit:cover;background:var(--sunk);flex:none}
+.sc-c b{display:block;font-size:20px;font-weight:700;letter-spacing:-.02em;line-height:1.1}
+.sc-c small{font-size:13px;font-weight:600;color:var(--c)}
+.sc-c .badge{margin:0 0 0 4px}
+.sc-bar{position:relative;display:flex;height:46px;border-radius:12px;overflow:hidden;background:var(--sunk)}
+.sc-a,.sc-b{display:flex;align-items:center;gap:8px;padding:0 12px;color:#fff;white-space:nowrap;transition:flex-basis 1s cubic-bezier(.2,.8,.2,1);flex:0 0 50%;min-width:0}
+.sc-a{background:var(--a)}
+.sc-b{background:var(--b);justify-content:flex-end}
+.sc-a b,.sc-b b{font-size:24px;font-weight:700;letter-spacing:-.02em;font-variant-numeric:tabular-nums}
+.sc-a span,.sc-b span{font-size:13px;opacity:.85;font-variant-numeric:tabular-nums}
+.sc-mid{position:absolute;left:50%;top:-2px;bottom:-2px;width:2px;margin-left:-1px;background:var(--text);opacity:.85}
+.sc-prog{margin-top:8px;font-size:14px}
+.sc-prog b{color:var(--ok);font-size:17px;font-variant-numeric:tabular-nums}
+.sc-line{height:3px;background:var(--sunk);border-radius:2px;margin-top:6px;overflow:hidden}
+.sc-line i{display:block;height:100%;width:0;background:var(--ok);transition:width 1s cubic-bezier(.2,.8,.2,1)}
+.score.flash{animation:none}
+.score.flash .sc-bar{animation:brilho 1s}
+@keyframes brilho{0%{box-shadow:0 0 0 0 color-mix(in srgb,var(--text) 40%,transparent)}100%{box-shadow:0 0 0 10px transparent}}
+
+/* Mapa do Brasil */
+.mapa{padding:12px 8px}
+#mapaBR{width:100%;height:auto;display:block}
+#mapaBR .uf{stroke:var(--panel);stroke-width:1.2;stroke-linejoin:round;cursor:pointer;transition:fill .9s ease,opacity .3s}
+#mapaBR .uf:hover{opacity:.85}
+#mapaBR .uf.sel{stroke:var(--text);stroke-width:2.5}
+#mapaBR text{font-size:13px;font-weight:700;pointer-events:none;text-anchor:middle;dominant-baseline:central;transition:fill .9s}
+#mapaBR .call rect{rx:6;stroke:var(--panel);stroke-width:1;cursor:pointer;transition:fill .9s}
+#mapaBR .call line{stroke:var(--muted);stroke-width:1;opacity:.6}
+#mapaBR .call.sel rect{stroke:var(--text);stroke-width:2}
+.detalhes .diff{text-align:left;margin-bottom:4px;font-weight:600;font-size:14px}
+
 /* Instalar app */
 .install{display:flex;align-items:center;justify-content:space-between;gap:12px}
 .install b{font-size:15px}
@@ -232,21 +272,33 @@ footer a{color:var(--muted)}
 
   <!-- ABA 1: placar e apuração atual -->
   <main class="tab" id="tab-apuracao">
-    <a class="ad" data-ad href="#"><b>ANUNCIE AQUI</b><span>Sua marca vista por todo mundo que acompanha a apuração</span></a>
-
-    <section class="panel progress" id="progress">
-      <div class="row">
-        <div><span class="big" id="pst">–</span> <span class="muted">das seções apuradas</span></div>
+    <section class="score" id="progress">
+      <div class="manchete" id="manchete" aria-live="polite">Carregando a apuração…</div>
+      <div class="sc-top">
+        <div class="sc-c" id="scA"></div>
+        <div class="sc-c dir" id="scB"></div>
       </div>
-      <div class="bar"><i id="pstBar"></i></div>
-      <div class="muted" style="margin-top:6px;font-size:13px" id="secs">–</div>
-      <div class="muted" style="font-size:12px" id="upd">–</div>
-      <div style="font-size:13px;margin-top:8px" id="eta"></div>
+      <div class="sc-bar">
+        <div class="sc-a" id="barA"><b id="pctA">–</b><span id="votA"></span></div>
+        <div class="sc-b" id="barB"><span id="votB"></span><b id="pctB">–</b></div>
+        <i class="sc-mid"></i>
+      </div>
+      <div class="sc-prog"><b id="pst">–</b> apurado<span class="muted" id="falta"></span></div>
+      <div class="sc-line"><i id="pstBar"></i></div>
     </section>
 
-    <section class="cands" id="cands"></section>
-    <div class="split" id="split"></div>
-    <div class="diff muted" id="diff"></div>
+    <section class="panel mapa">
+      <div class="ufinfo" id="ufInfo">Toque em um estado para ver o placar</div>
+      <svg id="mapaBR" role="img" aria-label="Mapa do Brasil com o candidato que lidera em cada estado"></svg>
+      <div class="legend" id="legend"></div>
+    </section>
+
+    <section class="panel detalhes">
+      <div class="diff" id="diff"></div>
+      <div class="muted" style="font-size:12px" id="secs">–</div>
+      <div class="muted" style="font-size:12px" id="upd">–</div>
+      <div style="font-size:13px;margin-top:6px" id="eta"></div>
+    </section>
 
     <button type="button" class="share" id="cardBtn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="3"/><circle cx="9" cy="9" r="2"/><path d="M21 15l-5-5L5 21"/></svg>Imagem para Status e Stories</button>
     <a class="share" data-share="placar" href="#" target="_blank" rel="noopener"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2a10 10 0 0 0-8.6 15.1L2 22l5-1.3A10 10 0 1 0 12 2zm5.3 14.2c-.2.6-1.3 1.2-1.8 1.2-.5.1-1 .2-3.3-.7-2.8-1.1-4.5-3.9-4.7-4.1-.1-.2-1.1-1.5-1.1-2.8s.7-2 1-2.3c.2-.3.5-.3.7-.3h.5c.2 0 .4 0 .6.5l.8 2c.1.2.1.4 0 .5l-.3.5-.4.4c-.1.1-.3.3-.1.6.2.3.7 1.2 1.6 2 1.1 1 2 1.3 2.3 1.4.3.1.5.1.6-.1l.9-1.1c.2-.3.4-.2.7-.1l1.9.9c.3.1.5.2.5.3.1.2.1.7-.1 1.2z"/></svg>Compartilhar placar no WhatsApp</a>
@@ -273,6 +325,8 @@ footer a{color:var(--muted)}
       <h2>Demais candidatos</h2>
       <table><tbody id="othersBody"></tbody></table>
     </section>
+
+    <a class="ad" data-ad href="#"><b>ANUNCIE AQUI</b><span>Sua marca vista por todo mundo que acompanha a apuração</span></a>
   </main>
 
   <!-- ABA 2: projeção -->
@@ -308,13 +362,6 @@ footer a{color:var(--muted)}
 
   <!-- ABA 3: estados / cenário total -->
   <main class="tab" id="tab-estados">
-    <section class="panel">
-      <h2>Mapa do Brasil</h2>
-      <div class="ufinfo" id="ufInfo">Toque em um estado</div>
-      <div class="tiles" id="tiles"></div>
-      <div class="legend" id="legend"></div>
-    </section>
-
     <a class="ad" data-ad href="#"><b>ANUNCIE AQUI</b><span>Espaço para patrocinador</span></a>
 
     <section class="panel">
@@ -464,8 +511,9 @@ footer a{color:var(--muted)}
   <button data-tab="bolao"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="5"/><circle cx="12" cy="12" r="1.5" fill="currentColor"/></svg>Bolão</button>
 </nav>
 
+<script src="mapa-br.js"></script>
 <script>
-const BASE = 'https://resultados.tse.jus.br/oficial/ele2026';
+const BASE ='https://resultados.tse.jus.br/oficial/ele2026';
 const UFS = ['ac','al','am','ap','ba','ce','df','es','go','ma','mg','ms','mt','pa','pb','pe','pi','pr','rj','rn','ro','rr','rs','sc','se','sp','to','zz'];
 const UF_NOME = {zz:'Exterior'};
 const NATIONAL_MS = 5000, STATES_MS = 20000, WORLD_MS = 60000;
@@ -565,6 +613,52 @@ function corLider(vA, vB){
 }
 
 /* ---------- Apuração ---------- */
+// "FLAVIO BOLSONARO" → "Flávio"
+const ACENTOS = {FLAVIO: 'Flávio'};
+const nomeCurto = nm => { const p = nm.split(' ')[0]; return ACENTOS[p] || titulo(p); };
+// 9.612.345 → "9,6 mi"; 12.345 → "12,3 mil"
+const abrev = n => n >= 1e6 ? pc1(n/1e6) + ' mi' : n >= 1e4 ? pc1(n/1e3) + ' mil' : fmt(Math.round(n));
+
+// Anima o número de onde estava até o novo valor (na primeira vez, sobe a partir do zero)
+function contar(el, alvo, f){
+  const de = el.dataset.v === undefined ? 0 : Number(el.dataset.v);
+  el.dataset.v = alvo;
+  if(de === alvo || matchMedia('(prefers-reduced-motion: reduce)').matches || document.hidden){ el.textContent = f(alvo); return; }
+  const t0 = performance.now(), dur = 900;
+  const passo = t => {
+    const k = Math.min(1, (t - t0) / dur), ease = 1 - Math.pow(1 - k, 3);
+    el.textContent = f(de + (alvo - de) * ease);
+    if(k < 1 && Number(el.dataset.v) === alvo) requestAnimationFrame(passo);
+  };
+  requestAnimationFrame(passo);
+}
+
+// Manchete do topo: quem lidera e, se houve virada, a que horas
+function renderManchete(){
+  const top = window.__cands, d = window.__d;
+  if(!top || !d) return;
+  const [A, B] = top;
+  let txt;
+  if(!(A.votos + B.votos)) txt = 'Aguardando os primeiros votos';
+  else{
+    const i = A.votos >= B.votos ? 0 : 1, c = top[i];
+    let quando = null;
+    for(let k = hist.length - 1; k > 0; k--){
+      const d0 = hist[k-1].v[A.n] - hist[k-1].v[B.n], d1 = hist[k].v[A.n] - hist[k].v[B.n];
+      if(d0 && d1 && Math.sign(d0) !== Math.sign(d1)){ quando = hist[k].t; break; }
+    }
+    const nome = `<span class="q" style="--c:${COLORS[i]}">${esc(nomeCurto(c.nm))}</span>`;
+    const hora = t => new Date(t).toLocaleTimeString('pt-BR', {hour:'2-digit', minute:'2-digit'});
+    if(c.eleito) txt = `${nome} é eleito presidente`;
+    else if(quando) txt = `${nome} passa à frente às ${hora(quando)}`;
+    else txt = `${nome} lidera com ${d.s.pst}% apurado`;
+  }
+  const el = $('manchete');
+  if(el.innerHTML === txt) return;
+  el.innerHTML = txt;
+  el.classList.remove('nova'); void el.offsetWidth; el.classList.add('nova');
+}
+
 function renderNational(d){
   const cs = candidates(d).sort((x,y)=>y.votos-x.votos || x.n-y.n);
   // Mantém a ordem dos cartões estável (pelo número do candidato) até haver votos
@@ -574,26 +668,34 @@ function renderNational(d){
   const top = (cs.some(c=>c.votos>0) ? cs.slice(0,2) : order.slice(0,2).map(n=>byN[n])).sort((x,y)=>x.n-y.n);
 
   const s = d.s, e = d.e, v = d.v;
-  $('pst').textContent = pct(s.pst);
+  contar($('pst'), num(s.pst), x=>pc2(x) + '%');
   $('pstBar').style.width = num(s.pst) + '%';
+  $('falta').textContent = num(e.esnt) ? ` · faltam ${abrev(num(e.esnt))} de eleitores` : '';
   $('secs').textContent = `${fmt(num(s.st))} de ${fmt(num(s.ts))} seções · ${fmt(num(e.te))} eleitores`;
   $('upd').textContent = d.dt ? `Totalizado pelo TSE: ${d.dt} ${d.ht}` : `Arquivo TSE: ${d.dg} ${d.hg}`;
 
-  $('cands').innerHTML = top.map((c,i)=>`
-    <div class="panel cand" style="--c:${COLORS[i]}">
-      <img src="${BASE}/${ele}/fotos/br/${c.sq}.jpeg" alt="" loading="lazy" onerror="this.style.visibility='hidden'">
-      <div>
-        <div class="nm">${c.nm} <span class="muted" style="font-weight:500">${c.n} · ${c.partido}</span>${c.eleito?'<span class="badge">ELEITO</span>':c.e==='s'&&c.st?`<span class="badge out">${c.st.toUpperCase()}</span>`:''}</div>
-        <div class="pct">${pct(c.pct)}</div>
-        <div class="votes">${fmt(c.votos)} votos</div>
-      </div>
-    </div>`).join('');
+  // Placar compacto: foto e nome de cada lado, barra única com as porcentagens
+  top.forEach((c, i)=>{
+    const el = $(i ? 'scB' : 'scA'), chave = `${ele}-${c.sq}-${c.eleito}`;
+    if(el.dataset.k === chave) return; // não recria a foto a cada atualização
+    el.dataset.k = chave;
+    el.innerHTML = `<img src="${BASE}/${ele}/fotos/br/${c.sq}.jpeg" alt="" onerror="this.style.visibility='hidden'">
+      <div style="--c:${COLORS[i]}"><b>${esc(nomeCurto(c.nm))}${c.eleito ? '<span class="badge">ELEITO</span>' : ''}</b><small>${c.n} · ${esc(c.partido)}</small></div>`;
+  });
+  const t2 = top[0].votos + top[1].votos;
+  const wA = t2 ? clamp(top[0].votos / t2 * 100, 14, 86) : 50; // mínimo de largura para o texto caber
+  $('barA').style.flexBasis = wA + '%';
+  $('barB').style.flexBasis = (100 - wA) + '%';
+  contar($('pctA'), num(top[0].pct), x=>pc2(x) + '%');
+  contar($('pctB'), num(top[1].pct), x=>pc2(x) + '%');
+  contar($('votA'), top[0].votos, abrev);
+  contar($('votB'), top[1].votos, abrev);
 
   const vv = num(v.vv) || 1;
   const pa = top[0].votos / vv * 100, pb = top[1].votos / vv * 100;
-  $('split').innerHTML = `<i style="width:${pa}%;background:var(--a)"></i><i style="flex:1"></i><i style="width:${pb}%;background:var(--b)"></i>`;
   const dif = top[0].votos - top[1].votos;
   $('diff').textContent = num(v.vv) ? `Diferença: ${fmt(Math.abs(dif))} votos (${pc2(Math.abs(pa-pb))} p.p.)` : 'Aguardando os primeiros votos…';
+  window.__d = d;
 
   const rest = cs.filter(c=>!top.includes(c));
   $('others').hidden = !rest.length;
@@ -641,26 +743,71 @@ function renderStates(){
   if(tab === 'mundo') renderWorld();
 }
 
-function renderTiles(){
-  const top = window.__top; if(!top) return;
-  let html = '';
-  for(const [u,[x,y]] of Object.entries(GRID)){
-    const d = ufData[u];
-    const v = d ? votosDe(d) : {};
-    const vA = v[top[0]]||0, vB = v[top[1]]||0, t = vA+vB;
-    const lead = t ? pc1(Math.max(vA,vB)/t*100) + '%' : '';
-    html += `<div class="tile${selUF===u?' sel':''}" data-uf="${u}" style="grid-column:${x+1};grid-row:${y+1};background:${corLider(vA,vB)}${t && Math.abs(vA-vB)/t > .12 ? ';--tc:#fff' : ''}">${u.toUpperCase()}<small>${lead}</small></div>`;
+/* ---------- Mapa do Brasil (contorno do IBGE em mapa-br.js) ---------- */
+// Estados pequenos demais para o rótulo: viram etiquetas ao lado, ligadas por uma linha
+const ETIQUETAS = [['rn','pb','pe','al','se'], ['es','rj']];
+const MAPA_EXTRA = 74; // espaço à direita para as etiquetas
+let mapaPronto = false;
+
+function montarMapa(){
+  const M = window.MAPA_BR;
+  if(!M) return false;
+  const W = M.w, H = M.h, svg = $('mapaBR');
+  svg.setAttribute('viewBox', `0 0 ${W + MAPA_EXTRA} ${H}`);
+  const peq = ETIQUETAS.flat();
+  let h = '';
+  for(const [u, p] of Object.entries(M.uf)) h += `<path class="uf" data-uf="${u}" d="${p.d}"/>`;
+  for(const [u, p] of Object.entries(M.uf)){
+    if(peq.includes(u)) continue;
+    h += u === 'df'
+      ? `<text data-t="df" x="${p.x + 15}" y="${p.y - 2}" style="font-size:10px">DF</text>`
+      : `<text data-t="${u}" x="${p.x}" y="${p.y}">${u.toUpperCase()}</text>`;
   }
-  $('tiles').innerHTML = html;
+  const bx = W + 10, bw = 56, bh = 26;
+  let ultimoY = -99;
+  for(const grupo of ETIQUETAS){
+    for(const u of grupo){
+      const p = M.uf[u];
+      const by = Math.max(ultimoY + bh + 6, p.y - bh/2);
+      ultimoY = by;
+      h += `<g class="call" data-c="${u}"><line x1="${p.x}" y1="${p.y}" x2="${bx}" y2="${by + bh/2}"/>` +
+           `<rect data-uf="${u}" x="${bx}" y="${by}" width="${bw}" height="${bh}"/><text data-t="${u}" x="${bx + bw/2}" y="${by + bh/2}">${u.toUpperCase()}</text></g>`;
+    }
+    ultimoY += 14;
+  }
+  // Exterior
+  const ey = Math.min(H - bh - 4, ultimoY + bh + 10);
+  h += `<g class="call" data-c="zz"><rect data-uf="zz" x="${bx}" y="${ey}" width="${bw}" height="${bh}"/><text data-t="zz" x="${bx + bw/2}" y="${ey + bh/2}">🌐</text></g>`;
+  svg.innerHTML = h;
+  mapaPronto = true;
+  return true;
+}
+
+function renderTiles(){
+  if(!mapaPronto && !montarMapa()) return;
+  const top = window.__top; if(!top) return;
+  const svg = $('mapaBR');
+  for(const u of [...Object.keys(MAPA_BR.uf), 'zz']){
+    const d = ufData[u], v = d ? votosDe(d) : {};
+    const vA = v[top[0]]||0, vB = v[top[1]]||0, t = vA + vB;
+    const cor = corLider(vA, vB), forte = t && Math.abs(vA - vB)/t > .12;
+    svg.querySelectorAll(`[data-uf="${u}"]`).forEach(el=>{ el.style.fill = cor; el.classList.toggle('sel', selUF === u); });
+    svg.querySelectorAll(`[data-t="${u}"]`).forEach(el=>{ el.style.fill = forte ? '#fff' : 'var(--text)'; });
+    svg.querySelector(`[data-c="${u}"]`)?.classList.toggle('sel', selUF === u);
+  }
   if(selUF) showUF(selUF);
 }
+
+const NOME_UF = {ac:'Acre',al:'Alagoas',am:'Amazonas',ap:'Amapá',ba:'Bahia',ce:'Ceará',df:'Distrito Federal',es:'Espírito Santo',go:'Goiás',
+  ma:'Maranhão',mg:'Minas Gerais',ms:'Mato Grosso do Sul',mt:'Mato Grosso',pa:'Pará',pb:'Paraíba',pe:'Pernambuco',pi:'Piauí',pr:'Paraná',
+  rj:'Rio de Janeiro',rn:'Rio Grande do Norte',ro:'Rondônia',rr:'Roraima',rs:'Rio Grande do Sul',sc:'Santa Catarina',se:'Sergipe',sp:'São Paulo',to:'Tocantins',zz:'Exterior'};
 
 function showUF(u){
   selUF = u;
   const d = ufData[u], top = window.__top, nm = window.__nomes;
-  if(!d || !top){ $('ufInfo').textContent = u.toUpperCase(); return; }
+  if(!d || !top){ $('ufInfo').textContent = NOME_UF[u] || u.toUpperCase(); return; }
   const v = votosDe(d), vA = v[top[0]]||0, vB = v[top[1]]||0, t = vA+vB||1;
-  $('ufInfo').innerHTML = `<b>${u.toUpperCase()}</b> · ${d.s.pst}% apurado · <span style="color:var(--a)">${nm[0]} ${pc2(vA/t*100)}%</span> × <span style="color:var(--b)">${pc2(vB/t*100)}% ${nm[1]}</span>`;
+  $('ufInfo').innerHTML = `<b>${NOME_UF[u]}</b> · ${d.s.pst}% apurado<br><span style="color:var(--a)">${esc(nomeCurto(nm[0]))} ${pc2(vA/t*100)}%</span> × <span style="color:var(--b)">${pc2(vB/t*100)}% ${esc(nomeCurto(nm[1]))}</span>`;
 }
 
 /* ---------- Xinguara, cidades do Pará e 1º × 2º turno ---------- */
@@ -940,8 +1087,8 @@ async function renderHistorico(){
   $('historico').innerHTML = linhas.join('') + (linhas.length ? '<div class="muted" style="font-size:11px;margin-top:8px">* No 1º turno de 2026, só os dois finalistas, em % dos votos dos dois.</div>' : '<div class="muted" style="font-size:13px">Sem dados para este município.</div>');
 }
 
-$('tiles').addEventListener('click', e=>{
-  const t = e.target.closest('.tile'); if(!t) return;
+$('mapaBR').addEventListener('click', e=>{
+  const t = e.target.closest('[data-uf]'); if(!t) return;
   selUF = t.dataset.uf; renderTiles();
 });
 
@@ -1306,7 +1453,7 @@ async function tickNational(){
       const first = lastIdg === null;
       lastIdg = d.idg;
       renderNational(d); renderStates();
-      checkAlertas(d); addHist(d); renderCorrida(); renderEta();
+      checkAlertas(d); addHist(d); renderCorrida(); renderEta(); renderManchete();
       if(!first){ const p = $('progress'); p.classList.remove('flash'); void p.offsetWidth; p.classList.add('flash'); }
     }
     liveBase = d.tf==='s' ? 'totalização encerrada' : 'ao vivo';
@@ -1650,11 +1797,7 @@ $('cardBtn').addEventListener('click', async ()=>{
 // Texto do compartilhamento, montado na hora do toque com o placar mais recente
 const SITE = 'https://szac-dev.github.io/apuracao-presidente-2026/';
 function textoPlacar(){
-  const [a, b] = [...document.querySelectorAll('#cands .cand')].map(c=>({
-    nm: c.querySelector('.nm').firstChild.textContent.trim(),
-    pct: c.querySelector('.pct').textContent,
-    votos: c.querySelector('.votes').textContent
-  }));
+  const [a, b] = (window.__cands || []).map(c=>({nm: c.nm, pct: c.pct + '%', votos: fmt(c.votos) + ' votos'}));
   if(!a || !b) return `🗳️ Acompanhe a apuração para Presidente ao vivo: ${SITE}`;
   return `🗳️ *Apuração Presidente 2026* · ${$('pst').textContent} das seções apuradas\n\n` +
     `🔴 ${a.nm}: *${a.pct}* (${a.votos})\n🔵 ${b.nm}: *${b.pct}* (${b.votos})\n\n` +

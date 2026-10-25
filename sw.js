@@ -1,8 +1,8 @@
 // Service worker do app: guarda a página para abrir mesmo sem internet.
 // Sempre tenta a rede primeiro, então quem está online recebe a versão nova na hora.
 // Os dados do TSE e do Firebase não passam por aqui (outros domínios).
-const CACHE = 'apuracao-v1';
-const ARQUIVOS = ['./', './index.html', './manifest.webmanifest', './icon-192.png', './icon-512.png'];
+const CACHE = 'apuracao-v2';
+const ARQUIVOS = ['./', './index.html', './mapa-br.js', './manifest.webmanifest', './icon-192.png', './icon-512.png'];
 
 self.addEventListener('install', e=>{
   e.waitUntil(caches.open(CACHE).then(c=>c.addAll(ARQUIVOS)).then(()=>self.skipWaiting()));
