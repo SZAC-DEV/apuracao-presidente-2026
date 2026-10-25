@@ -704,8 +704,10 @@ function renderLocal(){
   $('locPA').innerHTML = linhaLocal('Pará', ufData.pa);
   if(tab === 'municipio') renderHistorico();
 }
-// "SÃO FÉLIX DO XINGU" → "São Félix do Xingu"
-const titulo = s => s.toLowerCase().replace(/(^|\s)(\p{L})/gu, (m, a, b)=>a + b.toUpperCase()).replace(/ (D[aeo]s?|E) /g, m=>m.toLowerCase());
+// "SÃO FÉLIX DO XINGU" → "São Félix do Xingu"; siglas de escola (EMEF, EEEM…) continuam em maiúsculas
+const SIGLAS = /^(E{1,3}[EMFI]{0,3}M?|EMEI?F?|EMF|EEEFM|CMEI|CEI|IFPA|UFPA|UEPA|UFOPA|UNIFESSPA|SESI|SENAI|SESC|CEJA|CRAS|UBS)$/;
+const titulo = s => s.split(' ').map(w=>SIGLAS.test(w) ? w : w.toLowerCase().replace(/^(\p{L})/u, c=>c.toUpperCase())).join(' ')
+  .replace(/ (D[aeo]s?|E) /g, m=>m.toLowerCase());
 
 function renderCmp(){
   const top = window.__top, nm = window.__nomes;
