@@ -66,7 +66,7 @@ h2{font-size:12px;font-weight:600;margin:0 0 12px;text-transform:uppercase;lette
 .tab{display:none}
 .tab.on{display:block;animation:fade .2s}
 @keyframes fade{from{opacity:0}to{opacity:1}}
-nav.bottom{position:fixed;left:0;right:0;bottom:0;z-index:10;display:grid;grid-template-columns:repeat(5,1fr);background:color-mix(in srgb,var(--panel) 92%,transparent);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);border-top:1px solid var(--line);padding-bottom:env(safe-area-inset-bottom)}
+nav.bottom{position:fixed;left:0;right:0;bottom:0;z-index:10;display:grid;grid-template-columns:repeat(6,1fr);background:color-mix(in srgb,var(--panel) 92%,transparent);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);border-top:1px solid var(--line);padding-bottom:env(safe-area-inset-bottom)}
 nav.bottom button{all:unset;cursor:pointer;position:relative;height:var(--nav);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;font-size:11px;font-weight:500;color:var(--muted)}
 nav.bottom button svg{width:21px;height:21px;stroke-width:1.8}
 nav.bottom button.on{color:var(--text);font-weight:600}
@@ -155,6 +155,20 @@ tr.hl td{background:var(--hl)}
 .locrow .mini{grid-column:1/-1;margin-top:6px}
 .locrow small{grid-column:1/-1;font-size:12px;color:var(--muted)}
 .up{color:var(--ok)} .down{color:var(--a)}
+.esc{padding:10px 0;border-bottom:1px solid var(--line)}
+.esc:last-child{border-bottom:0}
+.esc .t{display:flex;justify-content:space-between;gap:10px;align-items:baseline}
+.esc .t b{font-size:14px;font-weight:600}
+.esc .pl{font-weight:600;font-variant-numeric:tabular-nums;white-space:nowrap}
+.esc small{display:block;font-size:12px;color:var(--muted);margin-top:2px}
+.esc .mini{margin-top:6px}
+.hist{display:grid;grid-template-columns:64px 1fr;gap:4px 12px;align-items:center;padding:10px 0;border-bottom:1px solid var(--line)}
+.hist:last-child{border-bottom:0}
+.hist .ano{font-weight:700;font-size:15px}
+.hist .ano small{display:block;font-weight:400;font-size:11px;color:var(--muted)}
+.hist .linha{display:flex;justify-content:space-between;font-size:13px;font-variant-numeric:tabular-nums;gap:8px}
+.hist .venc{font-weight:700}
+nav.bottom button{font-size:10px}
 
 /* Gráfico da corrida */
 #corrida{width:100%;height:auto;display:block}
@@ -211,6 +225,7 @@ footer a{color:var(--muted)}
       <button type="button" class="bell" id="alertBtn" aria-pressed="false">🔔 Alertas</button>
       <button type="button" class="themeBtn" id="themeBtn" aria-label="Trocar tema claro/escuro" title="Tema claro/escuro">◐</button>
       <span class="live"><span id="dot" class="dot"></span><span id="liveTxt">conectando…</span></span>
+      <span class="live" id="aud"></span>
     </div>
   </header>
   <div class="toast" id="toast" role="status" aria-live="polite"></div>
@@ -226,17 +241,12 @@ footer a{color:var(--muted)}
       <div class="bar"><i id="pstBar"></i></div>
       <div class="muted" style="margin-top:6px;font-size:13px" id="secs">–</div>
       <div class="muted" style="font-size:12px" id="upd">–</div>
+      <div style="font-size:13px;margin-top:8px" id="eta"></div>
     </section>
 
     <section class="cands" id="cands"></section>
     <div class="split" id="split"></div>
     <div class="diff muted" id="diff"></div>
-
-    <section class="panel local" id="local">
-      <h2>Xinguara e Pará</h2>
-      <div class="locrow" id="locXin"><span class="muted">Carregando…</span></div>
-      <div class="locrow" id="locPA"></div>
-    </section>
 
     <button type="button" class="share" id="cardBtn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="3"/><circle cx="9" cy="9" r="2"/><path d="M21 15l-5-5L5 21"/></svg>Imagem para Status e Stories</button>
     <a class="share" data-share="placar" href="#" target="_blank" rel="noopener"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2a10 10 0 0 0-8.6 15.1L2 22l5-1.3A10 10 0 1 0 12 2zm5.3 14.2c-.2.6-1.3 1.2-1.8 1.2-.5.1-1 .2-3.3-.7-2.8-1.1-4.5-3.9-4.7-4.1-.1-.2-1.1-1.5-1.1-2.8s.7-2 1-2.3c.2-.3.5-.3.7-.3h.5c.2 0 .4 0 .6.5l.8 2c.1.2.1.4 0 .5l-.3.5-.4.4c-.1.1-.3.3-.1.6.2.3.7 1.2 1.6 2 1.1 1 2 1.3 2.3 1.4.3.1.5.1.6-.1l.9-1.1c.2-.3.4-.2.7-.1l1.9.9c.3.1.5.2.5.3.1.2.1.7-.1 1.2z"/></svg>Compartilhar placar no WhatsApp</a>
@@ -363,6 +373,36 @@ footer a{color:var(--muted)}
     </section>
   </main>
 
+  <!-- ABA: meu município -->
+  <main class="tab" id="tab-municipio">
+    <section class="panel">
+      <label class="field" style="margin:0">Escolha seu município (Pará)
+        <select id="munSel" style="display:block;width:100%;margin-top:4px;padding:12px;font-size:16px"><option value="05711">XINGUARA</option></select>
+      </label>
+    </section>
+
+    <section class="panel">
+      <h2 id="munTitulo">Xinguara</h2>
+      <div class="locrow" id="locMun"><span class="muted">Carregando…</span></div>
+      <div class="locrow" id="locPA"></div>
+    </section>
+
+    <section class="panel">
+      <h2>Por local de votação</h2>
+      <div class="muted" style="font-size:12px;margin:-6px 0 8px" id="escSub">Resultado de cada escola, somando os boletins de urna que já chegaram ao TSE.</div>
+      <label class="field" style="margin-bottom:6px">Buscar escola ou bairro<input id="escBusca" placeholder="Ex.: Centro" autocomplete="off"></label>
+      <div id="escLista"><div class="muted" style="font-size:13px">Carregando os boletins de urna…</div></div>
+    </section>
+
+    <a class="ad" data-ad href="#"><b>ANUNCIE AQUI</b><span>Seu negócio em destaque na sua cidade</span></a>
+
+    <section class="panel">
+      <h2>Ao longo dos anos</h2>
+      <div class="muted" style="font-size:12px;margin:-6px 0 8px">Como o município votou para Presidente nas últimas eleições (% dos votos válidos)</div>
+      <div id="historico"><div class="muted" style="font-size:13px">Carregando…</div></div>
+    </section>
+  </main>
+
   <!-- ABA 5: bolão -->
   <main class="tab" id="tab-bolao">
     <section class="panel">
@@ -410,7 +450,7 @@ footer a{color:var(--muted)}
   </main>
 
   <footer>
-    <div class="credit">Desenvolvido por <b>Isaque Soares</b> · Xinguara-PA</div>
+    <div class="credit">Desenvolvido por <b>Isaque Soares</b> · Xinguara-PA<span id="audDia"></span></div>
     Fonte: <a href="https://resultados.tse.jus.br" target="_blank" rel="noopener">resultados.tse.jus.br</a> · placar nacional a cada 5 s, estados a cada 20 s.
   </footer>
 </div>
@@ -420,6 +460,7 @@ footer a{color:var(--muted)}
   <button data-tab="projecao"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 17l6-6 4 4 8-8"/><path d="M15 7h6v6"/></svg>Projeção</button>
   <button data-tab="estados"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/></svg>Estados</button>
   <button data-tab="mundo"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3a14 14 0 0 1 0 18M12 3a14 14 0 0 0 0 18"/></svg>Mundo</button>
+  <button data-tab="municipio"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><path d="M12 21s-7-6.2-7-12a7 7 0 0 1 14 0c0 5.8-7 12-7 12z"/><circle cx="12" cy="9" r="2.5"/></svg>Município</button>
   <button data-tab="bolao"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="5"/><circle cx="12" cy="12" r="1.5" fill="currentColor"/></svg>Bolão</button>
 </nav>
 
@@ -529,7 +570,8 @@ function renderNational(d){
   // Mantém a ordem dos cartões estável (pelo número do candidato) até haver votos
   if(!order.length || cs.length !== order.length) order = cs.map(c=>c.n);
   const byN = Object.fromEntries(cs.map(c=>[c.n,c]));
-  const top = cs.some(c=>c.votos>0) ? cs.slice(0,2) : order.slice(0,2).map(n=>byN[n]);
+  // Os dois primeiros, sempre na ordem do número: assim cada candidato mantém a mesma cor numa virada
+  const top = (cs.some(c=>c.votos>0) ? cs.slice(0,2) : order.slice(0,2).map(n=>byN[n])).sort((x,y)=>x.n-y.n);
 
   const s = d.s, e = d.e, v = d.v;
   $('pst').textContent = pct(s.pst);
@@ -622,7 +664,10 @@ function showUF(u){
 }
 
 /* ---------- Xinguara, cidades do Pará e 1º × 2º turno ---------- */
-let xinData = null, paData = {}, paTimer = null, munCfg = {};
+let paData = {}, paTimer = null, munCfg = {};
+// Município escolhido na aba "Meu município" (código TSE do Pará); padrão: Xinguara
+let munCd = XINGUARA.slice(2), munNome = 'XINGUARA', munData = null, mun1T = null;
+try{ const s = JSON.parse(localStorage.getItem('municipio')); if(s?.cd){ munCd = s.cd; munNome = s.nome; } }catch{}
 
 // Lista oficial de municípios do TSE (nomes), baixada uma vez por eleição
 function loadMunCfg(el = ele){
@@ -649,11 +694,18 @@ function linhaLocal(nome, d, extra = ''){
 function renderLocal(){
   if(!window.__top) return;
   let extra = '';
-  const p1 = prior?.[XINGUARA], top = window.__top;
-  if(ele === '6258' && p1?.vv) extra = ` · no 1º turno: ${pc1((p1.votos[top[0]]||0)/p1.vv*100)}% × ${pc1((p1.votos[top[1]]||0)/p1.vv*100)}%`;
-  $('locXin').innerHTML = linhaLocal('Xinguara', xinData, extra);
+  const top = window.__top;
+  if(ele === '6258' && mun1T){
+    const v = votosDe(mun1T), vv = num(mun1T.v.vv);
+    if(vv) extra = ` · no 1º turno: ${pc1((v[top[0]]||0)/vv*100)}% × ${pc1((v[top[1]]||0)/vv*100)}%`;
+  }
+  $('munTitulo').textContent = titulo(munNome);
+  $('locMun').innerHTML = linhaLocal(titulo(munNome), munData, extra);
   $('locPA').innerHTML = linhaLocal('Pará', ufData.pa);
+  if(tab === 'municipio') renderHistorico();
 }
+// "SÃO FÉLIX DO XINGU" → "São Félix do Xingu"
+const titulo = s => s.toLowerCase().replace(/(^|\s)(\p{L})/gu, (m, a, b)=>a + b.toUpperCase()).replace(/ (D[aeo]s?|E) /g, m=>m.toLowerCase());
 
 function renderCmp(){
   const top = window.__top, nm = window.__nomes;
@@ -707,12 +759,184 @@ function renderPA(){
     ? `${lista.length} cidade${lista.length===1?'':'s'} encontrada${lista.length===1?'':'s'}`
     : `As 25 maiores de ${total} cidades · ${nm[0].split(' ')[0]} na frente em ${ganhaA}, ${nm[1].split(' ')[0]} em ${ganhaB}`;
   $('paBody').innerHTML = lista.map(c=>`
-    <tr class="${'pa'+c.cd===XINGUARA?'hl':''}"><td>${esc(c.nome)}</td><td class="r">${c.pst}%</td>
+    <tr class="${c.cd===munCd?'hl':''}"><td>${esc(c.nome)}</td><td class="r">${c.pst}%</td>
       <td class="r" style="${c.t&&c.vA>c.vB?'color:var(--a);font-weight:600':''}">${c.t?pc1(c.pA)+'%':'–'}</td>
       <td class="r" style="${c.t&&c.vB>c.vA?'color:var(--b);font-weight:600':''}">${c.t?pc1(c.pB)+'%':'–'}</td></tr>`).join('')
     || '<tr><td colspan="4" class="muted">Nenhuma cidade encontrada.</td></tr>';
 }
 $('paBusca').addEventListener('input', renderPA);
+
+/* ---------- Meu município: seletor, escolas (boletins de urna) e histórico ---------- */
+const PLEITO = {'6258':'3221', '6257':'3220'}; // pleito dos arquivos de urna de cada turno
+const ESC_MS = 120000, ESC_POR_VEZ = 150;     // cidades grandes carregam aos poucos
+const AU = `${BASE}/arquivo-urna`;
+let escTimer = null, escCache = {}, escLocais = {}, escSecs = [], historico = null, nomesPA = {};
+
+async function initMunSel(){
+  if(Object.keys(nomesPA).length) return;
+  const cfg = await loadMunCfg().catch(()=>null);
+  const mus = cfg?.abr.find(a=>a.cd==='pa')?.mu || [];
+  if(!mus.length) return;
+  for(const m of mus) nomesPA[m.cd] = m.nm;
+  $('munSel').innerHTML = mus.slice().sort((a,b)=>a.nm.localeCompare(b.nm, 'pt'))
+    .map(m=>`<option value="${m.cd}">${esc(titulo(m.nm))}</option>`).join('');
+  $('munSel').value = munCd;
+}
+
+$('munSel').addEventListener('change', e=>{
+  munCd = e.target.value; munNome = nomesPA[munCd] || munNome;
+  try{ localStorage.setItem('municipio', JSON.stringify({cd: munCd, nome: munNome})); }catch{}
+  munData = null; mun1T = null; escSecs = [];
+  $('locMun').innerHTML = '<span class="muted">Carregando…</span>';
+  $('escLista').innerHTML = '<div class="muted" style="font-size:13px">Carregando os boletins de urna…</div>';
+  Promise.all([
+    getJSON(url('pa' + munCd)).then(d=>{ munData = d; }).catch(()=>{}),
+    ele === '6258' ? getJSON(url('pa' + munCd, ELE_1T)).then(d=>{ mun1T = d; }).catch(()=>{}) : null
+  ]).then(()=>{ renderLocal(); renderHistorico(); });
+  startEsc();
+  renderPA();
+});
+
+// --- Leitor do Boletim de Urna (formato ASN.1/DER do TSE) ---
+function derFilhos(b, s, e){
+  const out = [];
+  let i = s;
+  while(i < e){
+    const t = b[i++];
+    let num = t & 0x1f;
+    if(num === 0x1f){ num = 0; let x; do{ x = b[i++]; num = num*128 + (x & 0x7f); }while(x & 0x80); }
+    let L = b[i++];
+    if(L & 0x80){ const n = L & 0x7f; L = 0; for(let k = 0; k < n; k++) L = L*256 + b[i++]; }
+    out.push({cls: t >> 6, cons: !!(t & 0x20), num, s: i, e: i + L});
+    i += L;
+  }
+  return out;
+}
+const derInt = (b, n) => { let v = 0; for(let k = n.s; k < n.e; k++) v = v*256 + b[k]; return v; };
+const ehCtx = (n, num, cons = false) => n && n.cls === 2 && n.num === num && n.cons === cons;
+
+// Devolve o local de votação, a seção e os votos da eleição `el` (código do cargo/eleição do TSE)
+function lerBU(buf, el){
+  const b = new Uint8Array(buf);
+  const env = derFilhos(b, 0, b.length)[0];
+  const filhos = derFilhos(b, env.s, env.e);
+  const id = derFilhos(b, ...((n=>[n.s, n.e])(filhos.find(n=>ehCtx(n, 0, true)))));
+  const oct = filhos.find(n=>n.cls === 0 && n.num === 4);
+  const bu = derFilhos(b, oct.s, oct.e)[0];
+  const votos = {};
+  let brancos = 0, nulos = 0;
+  const visita = (n, dentro) => {
+    if(!n.cons) return;
+    const f = derFilhos(b, n.s, n.e);
+    // bloco "resultados da eleição": começa com o código da eleição
+    if(!dentro && f[0] && f[0].cls === 0 && f[0].num === 2 && String(derInt(b, f[0])) === el) dentro = true;
+    // voto: [1] tipo, [2] quantidade, [3] {partido, número}
+    if(dentro && ehCtx(f[0], 1) && ehCtx(f[1], 2)){
+      const tipo = derInt(b, f[0]), qtd = derInt(b, f[1]);
+      const idv = f.find(x=>ehCtx(x, 3, true));
+      if(idv){ const g = derFilhos(b, idv.s, idv.e); const cod = derInt(b, g[g.length-1]); votos[cod] = (votos[cod]||0) + qtd; }
+      else if(tipo === 2) brancos += qtd;
+      else if(tipo === 3) nulos += qtd;
+      return;
+    }
+    for(const x of f) visita(x, dentro);
+  };
+  visita(bu, false);
+  return {local: derInt(b, id[1]), secao: derInt(b, id[2]), votos, brancos, nulos};
+}
+
+async function tickEsc(){
+  const el = ele, pl = PLEITO[el], cd = munCd, p6 = 'p' + pl.padStart(6, '0');
+  if(!pl) return;
+  let cs;
+  try{ cs = await getJSON(`${AU}/${pl}/config/pa/pa-${p6}-cs.json`); }
+  catch{ $('escSub').textContent = 'Não foi possível carregar a lista de urnas agora.'; return; }
+  const mu = cs.abr[0].mu.find(m=>m.cd === cd);
+  if(!mu || cd !== munCd) return;
+  // seções agregadas ("nsp") votam junto com a principal e não têm boletim próprio
+  escSecs = mu.zon.flatMap(z=>z.sec.filter(s=>!s.nsp).map(s=>({z: z.cd, s: s.ns, rec: !!s.da, k: `${el}-${cd}-${z.cd}-${s.ns}`})));
+  if(!escLocais[cd]) escLocais[cd] = await fetch(`dados/locais/pa${cd}.json`).then(r=>r.ok ? r.json() : {}).catch(()=>({}));
+  renderEsc();
+
+  const pend = escSecs.filter(x=>x.rec && !escCache[x.k]).slice(0, ESC_POR_VEZ);
+  for(let i = 0; i < pend.length; i += 12){
+    await Promise.all(pend.slice(i, i+12).map(async x=>{
+      try{
+        const dir = `${AU}/${pl}/dados/pa/${cd}/${x.z}/${x.s}`;
+        const aux = await getJSON(`${dir}/${p6}-pa-m${cd}-z${x.z}-s${x.s}-aux.json`);
+        const h = aux.hashes.find(h=>/totaliz/i.test(h.st)) || aux.hashes[aux.hashes.length-1];
+        const arq = h?.arq.find(a=>a.tp === 'bu');
+        if(!arq) return;
+        const buf = await fetch(`${dir}/${h.hash}/${arq.nm}`).then(r=>{ if(!r.ok) throw 0; return r.arrayBuffer(); });
+        escCache[x.k] = lerBU(buf, el);
+      }catch{}
+    }));
+    if(cd !== munCd || el !== ele) return;
+    renderEsc();
+  }
+}
+
+function renderEsc(){
+  const top = window.__top, nm = window.__nomes;
+  if(!top || !escSecs.length) return;
+  const info = escLocais[munCd] || {}, L = info.locais || {}, S = info.secoes || {};
+  const grupos = {};
+  let recebidas = 0;
+  for(const x of escSecs){
+    const r = escCache[x.k];
+    const num = r?.local ?? S[`${x.z}-${x.s}`];
+    if(num == null) continue;
+    const g = grupos[num] ||= {num, tot: 0, ap: 0, vA: 0, vB: 0};
+    g.tot++;
+    if(r){ g.ap++; recebidas++; g.vA += r.votos[top[0]] || 0; g.vB += r.votos[top[1]] || 0; }
+  }
+  const sem = s => s.toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '');
+  const busca = sem($('escBusca').value.trim());
+  let lista = Object.values(grupos).map(g=>({...g, nome: L[g.num]?.n || `Local de votação ${g.num}`, bairro: L[g.num]?.b || '', el: L[g.num]?.e || 0}));
+  lista.sort((a,b)=>(b.el - a.el) || (b.tot - a.tot));
+  if(busca) lista = lista.filter(g=>sem(g.nome + ' ' + g.bairro).includes(busca));
+  const totalLocais = Object.keys(grupos).length;
+  $('escSub').textContent = `${fmt(recebidas)} de ${fmt(escSecs.length)} urnas já lidas · ${totalLocais} locais de votação` +
+    (escSecs.length > ESC_POR_VEZ ? ' · cidade grande: os boletins carregam aos poucos' : '');
+  $('escLista').innerHTML = lista.map(g=>{
+    const t = g.vA + g.vB, pA = t ? g.vA/t*100 : 0, pB = t ? g.vB/t*100 : 0;
+    const pl = t ? `<span style="color:var(--a)">${pc1(pA)}%</span> × <span style="color:var(--b)">${pc1(pB)}%</span>` : '<span class="muted">aguardando</span>';
+    return `<div class="esc"><div class="t"><b>${esc(titulo(g.nome))}</b><span class="pl">${pl}</span></div>${barra(pA, pB, t)}
+      <small>${g.bairro ? esc(titulo(g.bairro)) + ' · ' : ''}${g.ap} de ${g.tot} urna${g.tot>1?'s':''} · ${fmt(g.vA)} × ${fmt(g.vB)} votos</small></div>`;
+  }).join('') || '<div class="muted" style="font-size:13px">Nenhum local encontrado.</div>';
+}
+$('escBusca').addEventListener('input', renderEsc);
+
+function startEsc(){
+  clearInterval(escTimer);
+  tickEsc();
+  escTimer = setInterval(tickEsc, ESC_MS);
+}
+
+// --- Histórico: 2018 e 2022 (dados abertos do TSE, pré-processados) + 2026 ao vivo ---
+async function renderHistorico(){
+  historico ||= fetch('dados/historico-pa.json').then(r=>r.ok ? r.json() : {}).catch(()=>({}));
+  const h = (await historico)[munCd] || {};
+  const linhas = [];
+  const bloco = (ano, rotulo, cands) => {
+    const t = cands.reduce((s,c)=>s + c[1], 0);
+    if(!t) return;
+    const max = Math.max(...cands.map(c=>c[1]));
+    linhas.push(`<div class="hist"><div class="ano">${ano}<small>${rotulo}</small></div><div>${cands.map(([n,v])=>
+      `<div class="linha ${v===max?'venc':''}"><span>${esc(titulo(n))}</span><span>${pc1(v/t*100)}%</span></div>`).join('')}</div></div>`);
+  };
+  for(const ano of ['2018', '2022']) if(h[ano]) bloco(ano, '2º turno', h[ano]);
+  // 2026: os dois finalistas, em % dos votos válidos dos dois
+  const top = window.__top;
+  const do26 = (d, rot) => {
+    if(!d || !top) return;
+    const cs = Object.fromEntries(candidates(d).map(c=>[c.n, c]));
+    if(cs[top[0]] && cs[top[1]]) bloco('2026', rot, [[cs[top[0]].nm, cs[top[0]].votos], [cs[top[1]].nm, cs[top[1]].votos]]);
+  };
+  if(ele === '6258'){ do26(mun1T, '1º turno*'); do26(munData, `2º turno · ${munData?.s.pst ?? 0}% apurado`); }
+  else do26(munData, '1º turno*');
+  $('historico').innerHTML = linhas.join('') + (linhas.length ? '<div class="muted" style="font-size:11px;margin-top:8px">* No 1º turno de 2026, só os dois finalistas, em % dos votos dos dois.</div>' : '<div class="muted" style="font-size:13px">Sem dados para este município.</div>');
+}
 
 $('tiles').addEventListener('click', e=>{
   const t = e.target.closest('.tile'); if(!t) return;
@@ -731,7 +955,6 @@ async function loadPrior(){
       p[u] = {votos:votosDe(d), vv:num(d.v.vv), turnout: te ? c/te : 0.79, valid: c ? num(d.v.vv)/c : 0.94};
     }catch{}
   }));
-  try{ const d = await getJSON(url(XINGUARA, ELE_1T)); p[XINGUARA] = {votos:votosDe(d), vv:num(d.v.vv)}; }catch{}
   prior = p;
 }
 
@@ -1006,9 +1229,25 @@ function addHist(d){
   const last = hist[hist.length-1];
   if(last && p < last.p) hist = [];   // dado de outra eleição/teste: recomeça
   if(last && last.p === p && JSON.stringify(last.v) === JSON.stringify(v)) return;
-  hist.push({p, v});
+  hist.push({p, v, t: Date.now()});
   if(hist.length > 1500) hist.splice(0, hist.length - 1500);
   try{ localStorage.setItem(histKey(), JSON.stringify(hist)); }catch{}
+}
+
+// Previsão de término: ritmo das seções apuradas nos últimos 30 minutos
+function renderEta(){
+  const el = $('eta'), ult = hist[hist.length-1];
+  if(!ult || ult.p >= 100){ el.textContent = ''; return; }
+  if(ult.p >= 99.5){ el.textContent = 'Reta final: faltam as últimas urnas, que costumam demorar mais.'; return; }
+  const agora = Date.now();
+  const janela = hist.filter(h=>h.t && agora - h.t < 30*60e3);
+  const ini = janela[0];
+  if(!ini || ult.t - ini.t < 3*60e3 || ult.p - ini.p < 0.2){ el.textContent = ''; return; }
+  const porMin = (ult.p - ini.p) / ((ult.t - ini.t) / 60e3);
+  const fim = new Date(ult.t + (100 - ult.p) / porMin * 60e3);
+  const hora = fim.toLocaleTimeString('pt-BR', {hour:'2-digit', minute:'2-digit'});
+  const dia = fim.toDateString() !== new Date().toDateString() ? ' de amanhã' : '';
+  el.textContent = `⏱ No ritmo atual (+${pc1(porMin*10)}% a cada 10 min), a apuração termina por volta das ${hora}${dia}. O fim costuma ser mais lento.`;
 }
 
 function renderCorrida(){
@@ -1065,7 +1304,7 @@ async function tickNational(){
       const first = lastIdg === null;
       lastIdg = d.idg;
       renderNational(d); renderStates();
-      checkAlertas(d); addHist(d); renderCorrida();
+      checkAlertas(d); addHist(d); renderCorrida(); renderEta();
       if(!first){ const p = $('progress'); p.classList.remove('flash'); void p.offsetWidth; p.classList.add('flash'); }
     }
     liveBase = d.tf==='s' ? 'totalização encerrada' : 'ao vivo';
@@ -1078,7 +1317,8 @@ async function tickNational(){
 async function tickStates(){
   await Promise.all([...UFS.map(async u=>{
     try{ ufData[u] = await getJSON(url(u)); }catch{}
-  }), getJSON(url(XINGUARA)).then(d=>{ xinData = d; }).catch(()=>{})]);
+  }), getJSON(url('pa' + munCd)).then(d=>{ munData = d; }).catch(()=>{}),
+      ele === '6258' && !mun1T ? getJSON(url('pa' + munCd, ELE_1T)).then(d=>{ mun1T = d; }).catch(()=>{}) : null]);
   renderStates();
 }
 
@@ -1095,7 +1335,8 @@ function startWorld(){
 
 function start(){
   clearInterval(natTimer); clearInterval(ufTimer); clearInterval(worldTimer); clearInterval(paTimer); paTimer = null;
-  lastIdg = null; ufData = {}; order = []; cityData = {}; window.__top = null; xinData = null; paData = {};
+  clearInterval(escTimer); escTimer = null; escSecs = [];
+  lastIdg = null; ufData = {}; order = []; cityData = {}; window.__top = null; munData = null; mun1T = null; paData = {}; escCache = {};
   $('paBody').innerHTML = '';
   alertState = null; selCity = null; loadHist();
   $('ufs').innerHTML = ''; $('paises').innerHTML = '';
@@ -1105,6 +1346,7 @@ function start(){
   ufTimer = setInterval(tickStates, STATES_MS);
   if(tab === 'mundo') startWorld();
   if(tab === 'estados') startPA();
+  if(tab === 'municipio') startEsc();
 }
 
 function startPA(){
@@ -1127,6 +1369,8 @@ function showTab(t){
   if(t !== 'mundo'){ clearInterval(worldTimer); worldTimer = null; }
   if(t === 'estados' && !paTimer) startPA();
   if(t !== 'estados'){ clearInterval(paTimer); paTimer = null; }
+  if(t === 'municipio' && !escTimer){ initMunSel(); startEsc(); renderLocal(); renderHistorico(); }
+  if(t !== 'municipio'){ clearInterval(escTimer); escTimer = null; }
   clearInterval(bolaoTimer); bolaoTimer = null;
   if(t === 'bolao'){
     const tick = ()=>tickBolao().catch(()=>{ $('bolaoStatus').textContent = 'Falha ao atualizar o Bolão. Tentando de novo…'; });
@@ -1352,11 +1596,11 @@ async function gerarCard(){
 
   // Diferença e Xinguara
   texto($('diff').textContent, W/2, 1440, F(500, 36), C.muted, 'center');
-  if(xinData){
-    const p = placar2(xinData);
+  if(munData){
+    const p = placar2(munData);
     if(p.t){
       caixa(M, 1500, W - 2*M, 120, 24, C.panel);
-      texto('XINGUARA-PA', M + 40, 1572, F(600, 30), C.muted);
+      texto(munNome + '-PA', M + 40, 1572, F(600, 30), C.muted, 'left', 470);
       g.font = F(700, 44);
       const a = `${pc1(p.pA)}%`, sep = '  ×  ', b = `${pc1(p.pB)}%`;
       const wb = g.measureText(b).width, ws = g.measureText(sep).width;
@@ -1431,6 +1675,38 @@ document.querySelectorAll('[data-ad]').forEach(a=>{
 
 $('turno').addEventListener('change', e=>{ ele = e.target.value; start(); });
 document.addEventListener('visibilitychange', ()=>{ if(!document.hidden) tickNational(); });
+/* ---------- Audiência: pessoas online agora e visitas do dia (Firebase) ---------- */
+const AUD_BATIDA = 4*60e3, AUD_JANELA = 5*60e3; // cada aparelho avisa a cada 4 min; "online" = avisou nos últimos 5 min
+async function audiencia(){
+  let f;
+  try{ f = await initBolao(); }catch{ return; }
+  if(!f) return;
+  const {fs, db, uid} = f;
+  const dia = new Date().toLocaleDateString('sv-SE', {timeZone: 'America/Sao_Paulo'}); // AAAA-MM-DD
+  try{
+    if(!sessionStorage.getItem('visita-' + dia)){
+      await fs.setDoc(fs.doc(db, 'visitas', dia), {n: fs.increment(1)}, {merge: true});
+      sessionStorage.setItem('visita-' + dia, '1');
+    }
+  }catch{}
+  const bater = () => { if(!document.hidden) fs.setDoc(fs.doc(db, 'presenca', uid), {t: fs.serverTimestamp()}).catch(()=>{}); };
+  const contar = async () => {
+    try{
+      const [on, vis] = await Promise.all([
+        fs.getCountFromServer(fs.query(fs.collection(db, 'presenca'), fs.where('t', '>', fs.Timestamp.fromMillis(Date.now() - AUD_JANELA)))),
+        fs.getDoc(fs.doc(db, 'visitas', dia))
+      ]);
+      $('aud').textContent = `👁 ${fmt(Math.max(1, on.data().count))} online agora`;
+      if(vis.exists()) $('audDia').textContent = ` · ${fmt(vis.data().n)} visitas hoje`;
+    }catch{}
+  };
+  bater(); setTimeout(contar, 1500);
+  setInterval(bater, AUD_BATIDA);
+  setInterval(contar, 60e3);
+  document.addEventListener('visibilitychange', ()=>{ if(!document.hidden){ bater(); contar(); } });
+}
+setTimeout(audiencia, 3000); // depois do placar carregar, para não atrasar a abertura
+
 /* ---------- Instalar como app ---------- */
 if('serviceWorker' in navigator && location.protocol === 'https:') navigator.serviceWorker.register('sw.js').catch(()=>{});
 

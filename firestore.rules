@@ -27,5 +27,27 @@ service cloud.firestore {
 
       allow update, delete: if false;
     }
+
+    // Contador "online agora": cada aparelho só grava o próprio horário (do servidor)
+    match /presenca/{uid} {
+      allow read: if true;
+      allow create, update: if request.auth != null
+        && request.auth.uid == uid
+        && request.resource.data.keys().hasOnly(['t'])
+        && request.resource.data.t == request.time;
+      allow delete: if false;
+    }
+
+    // Visitas do dia: só pode somar 1 de cada vez
+    match /visitas/{dia} {
+      allow read: if true;
+      allow create: if request.auth != null
+        && request.resource.data.keys().hasOnly(['n'])
+        && request.resource.data.n == 1;
+      allow update: if request.auth != null
+        && request.resource.data.keys().hasOnly(['n'])
+        && request.resource.data.n == resource.data.n + 1;
+      allow delete: if false;
+    }
   }
 }
