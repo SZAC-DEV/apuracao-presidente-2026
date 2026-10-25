@@ -740,7 +740,14 @@ window.addEventListener('hashchange', ()=>showTab(location.hash.slice(1)));
 
 /* ---------- Bolão ---------- */
 // Configuração do app web do Firebase (Console → Configurações do projeto → Seus apps). null = Bolão desligado.
-const FIREBASE = null;
+const FIREBASE = {
+  apiKey: 'AIzaSyBAe2sCn7vVxYpdclxQARYx6BD069X7bPs',
+  authDomain: 'apuracao-628a5.firebaseapp.com',
+  projectId: 'apuracao-628a5',
+  storageBucket: 'apuracao-628a5.firebasestorage.app',
+  messagingSenderId: '1063195900921',
+  appId: '1:1063195900921:web:3a3a9e51011e3e82ac5b28'
+};
 const BOLAO_FECHA = new Date('2026-10-25T19:00:00-03:00'); // o mesmo horário está em firestore.rules
 const BOLAO_A = '13', BOLAO_B = '22'; // candidatos do 2º turno; o palpite guardado é o % do BOLAO_A nos votos válidos
 const BOLAO_MS = 30000;
