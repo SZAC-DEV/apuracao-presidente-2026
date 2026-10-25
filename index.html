@@ -168,12 +168,12 @@ tr.hl td{background:var(--hl)}
 @keyframes brilho{0%{box-shadow:0 0 0 0 color-mix(in srgb,var(--text) 40%,transparent)}100%{box-shadow:0 0 0 10px transparent}}
 
 /* Mapa do Brasil */
-.mapa{padding:12px 8px}
+.mapa{padding:12px 4px;margin-left:-8px;margin-right:-8px}
 #mapaBR{width:100%;height:auto;display:block}
 #mapaBR .uf{stroke:var(--panel);stroke-width:1.2;stroke-linejoin:round;cursor:pointer;transition:fill .9s ease,opacity .3s}
 #mapaBR .uf:hover{opacity:.85}
 #mapaBR .uf.sel{stroke:var(--text);stroke-width:2.5}
-#mapaBR text{font-size:13px;font-weight:700;pointer-events:none;text-anchor:middle;dominant-baseline:central;transition:fill .9s}
+#mapaBR text{font-size:21px;font-weight:700;pointer-events:none;text-anchor:middle;dominant-baseline:central;transition:fill .9s}
 #mapaBR .call rect{rx:6;stroke:var(--panel);stroke-width:1;cursor:pointer;transition:fill .9s}
 #mapaBR .call line{stroke:var(--muted);stroke-width:1;opacity:.6}
 #mapaBR .call.sel rect{stroke:var(--text);stroke-width:2}
@@ -746,7 +746,7 @@ function renderStates(){
 /* ---------- Mapa do Brasil (contorno do IBGE em mapa-br.js) ---------- */
 // Estados pequenos demais para o rótulo: viram etiquetas ao lado, ligadas por uma linha
 const ETIQUETAS = [['rn','pb','pe','al','se'], ['es','rj']];
-const MAPA_EXTRA = 74; // espaço à direita para as etiquetas
+const MAPA_EXTRA = 92; // espaço à direita para as etiquetas
 let mapaPronto = false;
 
 function montarMapa(){
@@ -760,10 +760,10 @@ function montarMapa(){
   for(const [u, p] of Object.entries(M.uf)){
     if(peq.includes(u)) continue;
     h += u === 'df'
-      ? `<text data-t="df" x="${p.x + 15}" y="${p.y - 2}" style="font-size:10px">DF</text>`
+      ? `<text data-t="df" x="${p.x + 24}" y="${p.y - 4}" style="font-size:16px">DF</text>`
       : `<text data-t="${u}" x="${p.x}" y="${p.y}">${u.toUpperCase()}</text>`;
   }
-  const bx = W + 10, bw = 56, bh = 26;
+  const bx = W + 12, bw = 76, bh = 34;
   let ultimoY = -99;
   for(const grupo of ETIQUETAS){
     for(const u of grupo){
