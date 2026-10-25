@@ -1,0 +1,266 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Apuração Presidente 2026</title>
+<meta name="description" content="Apuração ao vivo da eleição para Presidente 2026, direto dos dados oficiais do TSE. Feito em Xinguara-PA.">
+<link rel="preconnect" href="https://resultados.tse.jus.br">
+<style>
+:root{
+  --bg:#0b0f17; --panel:#121826; --line:#222b3d; --text:#e8edf6; --muted:#8a96ad;
+  --a:#e23b3b; --b:#2f6fe0; --ok:#22c55e; --warn:#f59e0b;
+}
+*{box-sizing:border-box}
+html,body{margin:0;background:var(--bg);color:var(--text);font:15px/1.45 system-ui,-apple-system,"Segoe UI",Roboto,Arial,sans-serif}
+.wrap{max-width:1100px;margin:0 auto;padding:16px}
+header{display:flex;flex-wrap:wrap;gap:12px;align-items:center;justify-content:space-between;margin-bottom:16px}
+h1{font-size:22px;margin:0;letter-spacing:-.01em}
+h1 small{display:block;font-size:13px;font-weight:500;color:var(--muted)}
+.live{display:inline-flex;align-items:center;gap:8px;font-size:13px;color:var(--muted)}
+.dot{width:10px;height:10px;border-radius:50%;background:var(--muted)}
+.dot.on{background:var(--ok);box-shadow:0 0 0 0 rgba(34,197,94,.7);animation:pulse 1.6s infinite}
+.dot.err{background:var(--a)}
+@keyframes pulse{70%{box-shadow:0 0 0 10px rgba(34,197,94,0)}100%{box-shadow:0 0 0 0 rgba(34,197,94,0)}}
+select{background:var(--panel);color:var(--text);border:1px solid var(--line);border-radius:8px;padding:6px 8px;font:inherit}
+.panel{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:16px}
+.progress{margin-bottom:16px}
+.progress .row{display:flex;justify-content:space-between;align-items:baseline;gap:8px;flex-wrap:wrap}
+.big{font-size:34px;font-weight:800;font-variant-numeric:tabular-nums}
+.bar{height:10px;background:var(--line);border-radius:99px;overflow:hidden;margin-top:8px}
+.bar>i{display:block;height:100%;background:var(--ok);width:0;transition:width .6s}
+.muted{color:var(--muted)}
+.cands{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:16px}
+.cand{position:relative;display:flex;gap:14px;align-items:center;overflow:hidden}
+.cand img{width:84px;height:84px;border-radius:50%;object-fit:cover;background:var(--line);flex:none;border:3px solid var(--c)}
+.cand .nm{font-size:18px;font-weight:700}
+.cand .pct{font-size:44px;font-weight:800;line-height:1;color:var(--c);font-variant-numeric:tabular-nums}
+.cand .votes{font-variant-numeric:tabular-nums;color:var(--muted)}
+.badge{display:inline-block;font-size:12px;font-weight:700;padding:2px 8px;border-radius:99px;background:var(--ok);color:#04110a;margin-left:6px;vertical-align:middle}
+.split{display:flex;height:22px;border-radius:99px;overflow:hidden;background:var(--line);margin-bottom:6px}
+.split i{transition:width .6s}
+.diff{text-align:center;margin-bottom:16px;font-variant-numeric:tabular-nums}
+.others{margin-bottom:16px}
+.others table td:first-child{width:50%}
+.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:16px}
+.stat b{display:block;font-size:20px;font-variant-numeric:tabular-nums}
+.stat span{font-size:12px;color:var(--muted);text-transform:uppercase;letter-spacing:.04em}
+h2{font-size:16px;margin:0 0 10px}
+table{width:100%;border-collapse:collapse;font-variant-numeric:tabular-nums}
+th,td{text-align:left;padding:7px 6px;border-bottom:1px solid var(--line);font-size:14px}
+th{color:var(--muted);font-weight:600;font-size:12px;text-transform:uppercase;letter-spacing:.04em}
+td.r,th.r{text-align:right}
+tr.hl td{background:rgba(245,158,11,.08)}
+.mini{display:flex;height:8px;border-radius:99px;overflow:hidden;background:var(--line);min-width:80px}
+.flash{animation:flash 1s}
+@keyframes flash{0%{background:rgba(34,197,94,.25)}100%{background:transparent}}
+footer{margin-top:20px;font-size:12px;color:var(--muted);text-align:center}
+footer a{color:var(--muted)}
+@media (max-width:720px){
+  .cands{grid-template-columns:1fr}
+  .stats{grid-template-columns:repeat(2,1fr)}
+  .cand .pct{font-size:36px}
+  .hide-sm{display:none}
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <h1>Apuração Presidente 2026<small>Dados oficiais do TSE, ao vivo · Feito em Xinguara-PA</small></h1>
+    <div style="display:flex;gap:12px;align-items:center;flex-wrap:wrap">
+      <select id="turno" aria-label="Turno">
+        <option value="6258">2º turno · 25/10</option>
+        <option value="6257">1º turno · 04/10</option>
+      </select>
+      <span class="live"><span id="dot" class="dot"></span><span id="liveTxt">conectando…</span></span>
+    </div>
+  </header>
+
+  <section class="panel progress" id="progress">
+    <div class="row">
+      <div><span class="big" id="pst">–</span> <span class="muted">das seções apuradas</span></div>
+      <div class="muted" id="upd">–</div>
+    </div>
+    <div class="bar"><i id="pstBar"></i></div>
+    <div class="muted" style="margin-top:6px;font-size:13px" id="secs">–</div>
+  </section>
+
+  <section class="cands" id="cands"></section>
+  <div class="split" id="split"></div>
+  <div class="diff muted" id="diff"></div>
+
+  <section class="panel others" id="others" hidden>
+    <h2>Demais candidatos</h2>
+    <table><tbody id="othersBody"></tbody></table>
+  </section>
+
+  <section class="stats">
+    <div class="panel stat"><span>Comparecimento</span><b id="comp">–</b><small class="muted" id="compP"></small></div>
+    <div class="panel stat"><span>Abstenção</span><b id="abst">–</b><small class="muted" id="abstP"></small></div>
+    <div class="panel stat"><span>Brancos</span><b id="branc">–</b><small class="muted" id="brancP"></small></div>
+    <div class="panel stat"><span>Nulos</span><b id="nul">–</b><small class="muted" id="nulP"></small></div>
+  </section>
+
+  <section class="panel">
+    <h2>Por estado</h2>
+    <table>
+      <thead><tr><th>UF</th><th class="r">Apurado</th><th id="hA">–</th><th id="hB">–</th><th class="hide-sm">Placar</th></tr></thead>
+      <tbody id="ufs"></tbody>
+    </table>
+  </section>
+
+  <footer>
+    Fonte: <a href="https://resultados.tse.jus.br" target="_blank" rel="noopener">resultados.tse.jus.br</a> (mesma base usada pelas TVs e pelo app do TSE).
+    Atualiza o placar nacional a cada 5 s e os estados a cada 20 s.
+  </footer>
+</div>
+
+<script>
+const BASE = 'https://resultados.tse.jus.br/oficial/ele2026';
+const UFS = ['ac','al','am','ap','ba','ce','df','es','go','ma','mg','ms','mt','pa','pb','pe','pi','pr','rj','rn','ro','rr','rs','sc','se','sp','to','zz'];
+const UF_NOME = {zz:'Exterior'};
+const NATIONAL_MS = 5000, STATES_MS = 20000;
+
+let ele = '6258', lastIdg = null, ufData = {}, order = [];
+let natTimer, ufTimer, lastOk = 0;
+
+const $ = id => document.getElementById(id);
+const num = s => Number(String(s ?? 0).replace(/\./g,'').replace(',', '.')) || 0;
+const fmt = n => n.toLocaleString('pt-BR');
+const pct = s => (s ?? '0,00') + '%';
+const COLORS = ['var(--a)','var(--b)'];
+
+function url(abr){
+  const e = ele.padStart(6,'0');
+  return `${BASE}/${ele}/dados/${abr}/${abr}-c0001-e${e}-u.json`;
+}
+
+async function getJSON(u){
+  // no-cache = revalida com o CDN (ETag) a cada chamada, sem baixar de novo se não mudou
+  const r = await fetch(u, {cache:'no-cache'});
+  if(!r.ok) throw new Error(r.status);
+  return r.json();
+}
+
+function candidates(d){
+  const out = [];
+  for(const a of d.carg[0].agr) for(const p of a.par) for(const c of p.cand)
+    out.push({n:c.n, sq:c.sqcand, nm:c.nmu, partido:p.sg, votos:num(c.vap), pct:c.pvap, e:c.e, eleito:c.e==='s' && /^eleito/i.test(c.st), st:c.st});
+  return out;
+}
+
+function renderNational(d){
+  const cs = candidates(d).sort((x,y)=>y.votos-x.votos || x.n-y.n);
+  // Mantém a ordem dos cartões estável (pelo número do candidato) até haver votos
+  if(!order.length || cs.length !== order.length) order = cs.map(c=>c.n);
+  const byN = Object.fromEntries(cs.map(c=>[c.n,c]));
+  const top = cs.some(c=>c.votos>0) ? cs.slice(0,2) : order.slice(0,2).map(n=>byN[n]);
+
+  const s = d.s, e = d.e, v = d.v;
+  $('pst').textContent = pct(s.pst);
+  $('pstBar').style.width = num(s.pst) + '%';
+  $('secs').textContent = `${fmt(num(s.st))} de ${fmt(num(s.ts))} seções · ${fmt(num(e.te))} eleitores`;
+  $('upd').textContent = d.hg && d.dt ? `TSE: ${d.dt} ${d.ht}` : `Arquivo TSE: ${d.dg} ${d.hg}`;
+
+  $('cands').innerHTML = top.map((c,i)=>`
+    <div class="panel cand" style="--c:${COLORS[i]}">
+      <img src="${BASE}/${ele}/fotos/br/${c.sq}.jpeg" alt="" loading="lazy" onerror="this.style.visibility='hidden'">
+      <div>
+        <div class="nm">${c.nm} <span class="muted" style="font-weight:500">${c.n} · ${c.partido}</span>${c.eleito?'<span class="badge">ELEITO</span>':c.e==='s'&&c.st?`<span class="badge" style="background:var(--warn)">${c.st.toUpperCase()}</span>`:''}</div>
+        <div class="pct">${pct(c.pct)}</div>
+        <div class="votes">${fmt(c.votos)} votos</div>
+      </div>
+    </div>`).join('');
+
+  const vv = num(v.vv) || 1;
+  const pa = top[0].votos / vv * 100, pb = top[1].votos / vv * 100;
+  $('split').innerHTML = `<i style="width:${pa}%;background:var(--a)"></i><i style="flex:1"></i><i style="width:${pb}%;background:var(--b)"></i>`;
+  const dif = top[0].votos - top[1].votos;
+  $('diff').textContent = num(v.vv) ? `Diferença: ${fmt(Math.abs(dif))} votos (${(Math.abs(pa-pb)).toFixed(2).replace('.',',')} p.p.)` : 'Aguardando os primeiros votos…';
+
+  const rest = cs.filter(c=>!top.includes(c));
+  $('others').hidden = !rest.length;
+  $('othersBody').innerHTML = rest.map(c=>`<tr><td>${c.nm} <span class="muted">${c.n}</span></td><td class="r">${fmt(c.votos)}</td><td class="r">${pct(c.pct)}</td></tr>`).join('');
+
+  $('comp').textContent = fmt(num(e.c)); $('compP').textContent = pct(e.pc);
+  $('abst').textContent = fmt(num(e.a)); $('abstP').textContent = pct(e.pa);
+  $('branc').textContent = fmt(num(v.vb)); $('brancP').textContent = pct(v.pvb) + ' do total';
+  $('nul').textContent = fmt(num(v.tvn)); $('nulP').textContent = pct(v.ptvn) + ' do total';
+
+  $('hA').textContent = top[0].nm; $('hB').textContent = top[1].nm;
+  $('hA').style.color = 'var(--a)'; $('hB').style.color = 'var(--b)';
+  window.__top = top.map(c=>c.n);
+
+  document.title = num(v.vv)
+    ? `${top[0].nm} ${top[0].pct}% x ${top[1].pct}% ${top[1].nm} · ${s.pst}% apurado`
+    : 'Apuração Presidente 2026';
+}
+
+function renderStates(){
+  const top = window.__top; if(!top) return;
+  const rows = UFS.filter(u=>ufData[u]).map(u=>{
+    const d = ufData[u], cs = Object.fromEntries(candidates(d).map(c=>[c.n,c]));
+    const a = cs[top[0]], b = cs[top[1]];
+    const tot = (a?.votos||0)+(b?.votos||0) || 1;
+    return {u, pst:num(d.s.pst), pstS:d.s.pst, a, b, wa:(a?.votos||0)/tot*100, wb:(b?.votos||0)/tot*100};
+  });
+  $('ufs').innerHTML = rows.map(r=>`
+    <tr class="${r.u==='pa'?'hl':''}">
+      <td><b>${UF_NOME[r.u]||r.u.toUpperCase()}</b></td>
+      <td class="r">${r.pstS}%</td>
+      <td>${r.a?pct(r.a.pct):'–'}</td>
+      <td>${r.b?pct(r.b.pct):'–'}</td>
+      <td class="hide-sm"><div class="mini"><i style="width:${r.wa}%;background:var(--a)"></i><i style="width:${r.wb}%;background:var(--b)"></i></div></td>
+    </tr>`).join('');
+}
+
+function setLive(ok, txt){
+  $('dot').className = 'dot ' + (ok ? 'on' : 'err');
+  $('liveTxt').textContent = txt;
+}
+
+async function tickNational(){
+  try{
+    const d = await getJSON(url('br'));
+    lastOk = Date.now();
+    if(d.idg !== lastIdg){
+      const first = lastIdg === null;
+      lastIdg = d.idg;
+      renderNational(d); renderStates();
+      if(!first) $('progress').classList.remove('flash'), void $('progress').offsetWidth, $('progress').classList.add('flash');
+    }
+    setLive(true, d.tf==='s' ? 'totalização encerrada' : 'ao vivo');
+  }catch(err){
+    setLive(false, 'sem conexão com o TSE, tentando de novo…');
+  }
+}
+
+async function tickStates(){
+  await Promise.all(UFS.map(async u=>{
+    try{ ufData[u] = await getJSON(url(u)); }catch{}
+  }));
+  renderStates();
+}
+
+setInterval(()=>{
+  if(!lastOk) return;
+  const s = Math.round((Date.now()-lastOk)/1000);
+  if($('dot').classList.contains('on')) $('liveTxt').textContent = ($('liveTxt').textContent.startsWith('totaliz') ? 'totalização encerrada' : 'ao vivo') + ` · checado há ${s}s`;
+}, 1000);
+
+function start(){
+  clearInterval(natTimer); clearInterval(ufTimer);
+  lastIdg = null; ufData = {}; order = []; window.__top = null;
+  $('ufs').innerHTML = '';
+  tickNational().then(tickStates);
+  natTimer = setInterval(tickNational, NATIONAL_MS);
+  ufTimer = setInterval(tickStates, STATES_MS);
+}
+
+$('turno').addEventListener('change', e=>{ ele = e.target.value; start(); });
+document.addEventListener('visibilitychange', ()=>{ if(!document.hidden) tickNational(); });
+start();
+</script>
+</body>
+</html>
