@@ -12,6 +12,12 @@
 <title>Apuração Presidente 2026</title>
 <meta name="description" content="Apuração ao vivo da eleição para Presidente 2026, direto dos dados oficiais do TSE. Desenvolvido por Isaque Soares, Xinguara-PA.">
 <link rel="preconnect" href="https://resultados.tse.jus.br">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="icon-192.png" type="image/png">
+<link rel="apple-touch-icon" href="icon-180.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Apuração">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <style>
 /* Tema: tons neutros de cinza/preto. Segue o sistema, com troca manual (data-theme). */
 :root{
@@ -133,6 +139,23 @@ tr.hl td{background:var(--hl)}
 .toast.show{transform:none;opacity:1;pointer-events:auto}
 .toast.virada{background:var(--text);color:var(--bg);border-color:var(--text);font-size:16px;font-weight:700}
 
+/* Instalar app */
+.install{display:flex;align-items:center;justify-content:space-between;gap:12px}
+.install b{font-size:15px}
+.install-acoes{display:flex;align-items:center;gap:6px;flex:none}
+.install .btn{width:auto;padding:10px 16px;font-size:14px}
+.install .x{all:unset;cursor:pointer;width:32px;height:32px;display:flex;align-items:center;justify-content:center;font-size:20px;color:var(--muted);border-radius:8px}
+
+/* Xinguara e Pará */
+.locrow{display:grid;grid-template-columns:1fr auto;gap:2px 12px;align-items:baseline;padding:10px 0;border-bottom:1px solid var(--line)}
+.locrow:last-child{border-bottom:0;padding-bottom:0}
+.locrow:first-of-type{padding-top:0}
+.locrow b{font-size:15px}
+.locrow .pl{font-weight:600;font-variant-numeric:tabular-nums;text-align:right}
+.locrow .mini{grid-column:1/-1;margin-top:6px}
+.locrow small{grid-column:1/-1;font-size:12px;color:var(--muted)}
+.up{color:var(--ok)} .down{color:var(--a)}
+
 /* Gráfico da corrida */
 #corrida{width:100%;height:auto;display:block}
 #corrida text{fill:var(--muted);font-size:12px;font-family:inherit}
@@ -209,7 +232,25 @@ footer a{color:var(--muted)}
     <div class="split" id="split"></div>
     <div class="diff muted" id="diff"></div>
 
+    <section class="panel local" id="local">
+      <h2>Xinguara e Pará</h2>
+      <div class="locrow" id="locXin"><span class="muted">Carregando…</span></div>
+      <div class="locrow" id="locPA"></div>
+    </section>
+
+    <button type="button" class="share" id="cardBtn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="3"/><circle cx="9" cy="9" r="2"/><path d="M21 15l-5-5L5 21"/></svg>Imagem para Status e Stories</button>
     <a class="share" data-share="placar" href="#" target="_blank" rel="noopener"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2a10 10 0 0 0-8.6 15.1L2 22l5-1.3A10 10 0 1 0 12 2zm5.3 14.2c-.2.6-1.3 1.2-1.8 1.2-.5.1-1 .2-3.3-.7-2.8-1.1-4.5-3.9-4.7-4.1-.1-.2-1.1-1.5-1.1-2.8s.7-2 1-2.3c.2-.3.5-.3.7-.3h.5c.2 0 .4 0 .6.5l.8 2c.1.2.1.4 0 .5l-.3.5-.4.4c-.1.1-.3.3-.1.6.2.3.7 1.2 1.6 2 1.1 1 2 1.3 2.3 1.4.3.1.5.1.6-.1l.9-1.1c.2-.3.4-.2.7-.1l1.9.9c.3.1.5.2.5.3.1.2.1.7-.1 1.2z"/></svg>Compartilhar placar no WhatsApp</a>
+
+    <section class="panel install" id="install" hidden>
+      <div>
+        <b>Instale o app da Apuração</b>
+        <div class="muted" style="font-size:13px" id="installTxt">Abra o placar com um toque, direto da tela inicial.</div>
+      </div>
+      <div class="install-acoes">
+        <button type="button" class="btn" id="installBtn">Instalar</button>
+        <button type="button" class="x" id="installX" aria-label="Fechar">×</button>
+      </div>
+    </section>
 
     <section class="stats">
       <div class="panel stat"><span>Comparecimento</span><b id="comp">–</b><small class="muted" id="compP"></small></div>
@@ -271,6 +312,25 @@ footer a{color:var(--muted)}
       <table>
         <thead><tr><th>UF</th><th class="r">Apurado</th><th id="hA">–</th><th id="hB">–</th><th>Placar</th></tr></thead>
         <tbody id="ufs"></tbody>
+      </table>
+    </section>
+
+    <section class="panel" id="cmp" hidden>
+      <h2>1º turno × 2º turno</h2>
+      <div class="muted" style="font-size:12px;margin:-6px 0 8px">Quanto cada um cresceu em relação ao 1º turno, em pontos percentuais dos votos válidos. No 1º turno os votos eram divididos com os outros candidatos, então os dois tendem a crescer.</div>
+      <table>
+        <thead><tr><th>UF</th><th class="r" id="cA">–</th><th class="r" id="cB">–</th><th class="r">Quem cresceu mais</th></tr></thead>
+        <tbody id="cmpBody"></tbody>
+      </table>
+    </section>
+
+    <section class="panel">
+      <h2>Cidades do Pará</h2>
+      <label class="field" style="margin-bottom:6px">Buscar cidade<input id="paBusca" placeholder="Ex.: Redenção" autocomplete="off"></label>
+      <div class="muted" style="font-size:12px;margin-bottom:6px" id="paSub">Carregando os 144 municípios…</div>
+      <table>
+        <thead><tr><th>Cidade</th><th class="r">Apurado</th><th class="r" id="pA">–</th><th class="r" id="pB">–</th></tr></thead>
+        <tbody id="paBody"></tbody>
       </table>
     </section>
   </main>
@@ -372,6 +432,8 @@ const NATIONAL_MS = 5000, STATES_MS = 20000, WORLD_MS = 60000;
 const AD_WHATSAPP = '5594992902122';
 const AD_MENSAGEM = 'Quero anunciar no site de apuração';
 const ELE_1T = '6257'; // usado como ponto de partida da projeção do 2º turno
+const XINGUARA = 'pa05711'; // código TSE do município
+const PA_MS = 60000;
 
 // Posição de cada estado na grade do mapa [coluna, linha]
 const GRID = {rr:[2,0],ap:[4,0],am:[1,1],pa:[3,1],ma:[4,1],ce:[5,1],rn:[6,1],ac:[0,2],ro:[1,2],mt:[2,2],to:[3,2],pi:[4,2],pe:[5,2],pb:[6,2],
@@ -501,6 +563,8 @@ function renderNational(d){
   $('nul').textContent = fmt(num(v.tvn)); $('nulP').textContent = pct(v.ptvn) + ' do total';
 
   window.__top = top.map(c=>c.n);
+  window.__cands = top;
+  top.forEach(c=>foto(c.sq)); // já deixa as fotos prontas para o card de imagem
   window.__nomes = top.map(c=>c.nm);
   for(const [id,i] of [['hA',0],['hB',1],['wA',0],['wB',1]]){ $(id).textContent = top[i].nm; $(id).style.color = COLORS[i]; }
   const leg = `<span><i style="background:var(--a)"></i>${top[0].nm}</span><span><i style="background:var(--b)"></i>${top[1].nm}</span><span><i style="background:var(--line)"></i>sem votos</span>`;
@@ -530,6 +594,8 @@ function renderStates(){
     </tr>`).join('');
   renderTiles();
   renderProjection();
+  renderLocal();
+  renderCmp();
   if(tab === 'mundo') renderWorld();
 }
 
@@ -555,6 +621,99 @@ function showUF(u){
   $('ufInfo').innerHTML = `<b>${u.toUpperCase()}</b> · ${d.s.pst}% apurado · <span style="color:var(--a)">${nm[0]} ${pc2(vA/t*100)}%</span> × <span style="color:var(--b)">${pc2(vB/t*100)}% ${nm[1]}</span>`;
 }
 
+/* ---------- Xinguara, cidades do Pará e 1º × 2º turno ---------- */
+let xinData = null, paData = {}, paTimer = null, munCfg = {};
+
+// Lista oficial de municípios do TSE (nomes), baixada uma vez por eleição
+function loadMunCfg(el = ele){
+  return munCfg[el] ||= getJSON(`${BASE}/${el}/config/mun-e${el.padStart(6,'0')}-cm.json`).catch(e=>{ delete munCfg[el]; throw e; });
+}
+
+// Placar dos dois finalistas num arquivo do TSE: {vA, vB, pA, pB, pst}
+function placar2(d){
+  const top = window.__top, v = votosDe(d);
+  const vA = v[top[0]]||0, vB = v[top[1]]||0, t = vA+vB;
+  return {vA, vB, t, pA: t ? vA/t*100 : 0, pB: t ? vB/t*100 : 0, pst: d.s.pst};
+}
+const barra = (pA, pB, t) => `<div class="mini"><i style="width:${t?pA:0}%;background:var(--a)"></i><i style="width:${t?pB:0}%;background:var(--b)"></i></div>`;
+
+function linhaLocal(nome, d, extra = ''){
+  if(!d) return `<b>${nome}</b><span class="muted">–</span>`;
+  const p = placar2(d), nm = window.__nomes;
+  const pl = p.t
+    ? `<span style="color:var(--a)">${pc1(p.pA)}%</span> × <span style="color:var(--b)">${pc1(p.pB)}%</span>`
+    : '<span class="muted">sem votos ainda</span>';
+  return `<b>${nome}</b><span class="pl">${pl}</span>${barra(p.pA, p.pB, p.t)}<small>${p.pst}% apurado · ${fmt(p.vA)} × ${fmt(p.vB)} votos${extra}</small>`;
+}
+
+function renderLocal(){
+  if(!window.__top) return;
+  let extra = '';
+  const p1 = prior?.[XINGUARA], top = window.__top;
+  if(ele === '6258' && p1?.vv) extra = ` · no 1º turno: ${pc1((p1.votos[top[0]]||0)/p1.vv*100)}% × ${pc1((p1.votos[top[1]]||0)/p1.vv*100)}%`;
+  $('locXin').innerHTML = linhaLocal('Xinguara', xinData, extra);
+  $('locPA').innerHTML = linhaLocal('Pará', ufData.pa);
+}
+
+function renderCmp(){
+  const top = window.__top, nm = window.__nomes;
+  $('cmp').hidden = ele !== '6258' || !top || !prior;
+  if($('cmp').hidden) return;
+  $('cA').textContent = nm[0]; $('cA').style.color = 'var(--a)';
+  $('cB').textContent = nm[1]; $('cB').style.color = 'var(--b)';
+  const sinal = x => (x >= 0 ? '+' : '−') + pc1(Math.abs(x));
+  const rows = UFS.filter(u=>ufData[u] && prior[u]?.vv).map(u=>{
+    const p2 = placar2(ufData[u]), p1 = prior[u];
+    if(!p2.t) return {u, vazio:true};
+    // 2º turno: % dos válidos; 1º turno: % dos válidos de todos os candidatos
+    const dA = p2.pA - (p1.votos[top[0]]||0)/p1.vv*100;
+    const dB = p2.pB - (p1.votos[top[1]]||0)/p1.vv*100;
+    return {u, dA, dB};
+  });
+  const comVotos = rows.filter(r=>!r.vazio);
+  $('cmpBody').innerHTML = comVotos.length ? comVotos.sort((a,b)=>(b.dA-b.dB)-(a.dA-a.dB)).map(r=>`
+    <tr class="${r.u==='pa'?'hl':''}"><td><b>${UF_NOME[r.u]||r.u.toUpperCase()}</b></td>
+      <td class="r">${sinal(r.dA)}</td><td class="r">${sinal(r.dB)}</td>
+      <td class="r" style="color:${r.dA>=r.dB?'var(--a)':'var(--b)'}">${esc((r.dA>=r.dB?nm[0]:nm[1]).split(' ')[0])}</td></tr>`).join('')
+    : '<tr><td colspan="4" class="muted">Aparece quando os estados começarem a apurar.</td></tr>';
+}
+
+async function tickPA(){
+  let cfg;
+  try{ cfg = await loadMunCfg(); }catch{ $('paSub').textContent = 'Não foi possível carregar a lista de cidades.'; return; }
+  const mus = cfg.abr.find(a=>a.cd==='pa')?.mu || [], el = ele;
+  for(let i = 0; i < mus.length; i += 24){
+    await Promise.all(mus.slice(i, i+24).map(async m=>{
+      try{ const d = await getJSON(url('pa'+m.cd, el)); if(el === ele) paData[m.cd] = {nome:m.nm, d}; }catch{}
+    }));
+  }
+  renderPA();
+}
+
+function renderPA(){
+  if(!window.__top) return;
+  const busca = $('paBusca').value.trim().toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g,'');
+  let lista = Object.entries(paData).map(([cd,{nome,d}])=>({cd, nome, te:num(d.e.te), ...placar2(d)}));
+  const total = lista.length;
+  lista.sort((a,b)=>b.te-a.te);
+  if(busca) lista = lista.filter(c=>c.nome.toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g,'').includes(busca));
+  else lista = lista.slice(0, 25);
+  const nm = window.__nomes;
+  $('pA').textContent = nm[0].split(' ')[0]; $('pA').style.color = 'var(--a)';
+  $('pB').textContent = nm[1].split(' ')[0]; $('pB').style.color = 'var(--b)';
+  const ganhaA = Object.values(paData).filter(({d})=>{ const p = placar2(d); return p.t && p.vA > p.vB; }).length;
+  const ganhaB = Object.values(paData).filter(({d})=>{ const p = placar2(d); return p.t && p.vB > p.vA; }).length;
+  $('paSub').textContent = busca
+    ? `${lista.length} cidade${lista.length===1?'':'s'} encontrada${lista.length===1?'':'s'}`
+    : `As 25 maiores de ${total} cidades · ${nm[0].split(' ')[0]} na frente em ${ganhaA}, ${nm[1].split(' ')[0]} em ${ganhaB}`;
+  $('paBody').innerHTML = lista.map(c=>`
+    <tr class="${'pa'+c.cd===XINGUARA?'hl':''}"><td>${esc(c.nome)}</td><td class="r">${c.pst}%</td>
+      <td class="r" style="${c.t&&c.vA>c.vB?'color:var(--a);font-weight:600':''}">${c.t?pc1(c.pA)+'%':'–'}</td>
+      <td class="r" style="${c.t&&c.vB>c.vA?'color:var(--b);font-weight:600':''}">${c.t?pc1(c.pB)+'%':'–'}</td></tr>`).join('')
+    || '<tr><td colspan="4" class="muted">Nenhuma cidade encontrada.</td></tr>';
+}
+$('paBusca').addEventListener('input', renderPA);
+
 $('tiles').addEventListener('click', e=>{
   const t = e.target.closest('.tile'); if(!t) return;
   selUF = t.dataset.uf; renderTiles();
@@ -569,9 +728,10 @@ async function loadPrior(){
     try{
       const d = await getJSON(url(u, ELE_1T));
       const c = num(d.e.c), te = num(d.e.te);
-      p[u] = {votos:votosDe(d), turnout: te ? c/te : 0.79, valid: c ? num(d.v.vv)/c : 0.94};
+      p[u] = {votos:votosDe(d), vv:num(d.v.vv), turnout: te ? c/te : 0.79, valid: c ? num(d.v.vv)/c : 0.94};
     }catch{}
   }));
+  try{ const d = await getJSON(url(XINGUARA, ELE_1T)); p[XINGUARA] = {votos:votosDe(d), vv:num(d.v.vv)}; }catch{}
   prior = p;
 }
 
@@ -655,7 +815,7 @@ async function loadWorld(){
     await loadScript('https://cdn.jsdelivr.net/npm/topojson-client@3.1.0/dist/topojson-client.min.js');
     const [topo, cfg] = await Promise.all([
       fetch('https://cdn.jsdelivr.net/npm/world-atlas@2.0.2/countries-110m.json').then(r=>r.json()),
-      getJSON(`${BASE}/${ele}/config/mun-e${ele.padStart(6,'0')}-cm.json`).catch(()=>null)
+      loadMunCfg().catch(()=>null)
     ]);
     nomesCidade = {};
     const zz = cfg?.abr.find(a=>a.cd==='zz');
@@ -916,9 +1076,9 @@ async function tickNational(){
 }
 
 async function tickStates(){
-  await Promise.all(UFS.map(async u=>{
+  await Promise.all([...UFS.map(async u=>{
     try{ ufData[u] = await getJSON(url(u)); }catch{}
-  }));
+  }), getJSON(url(XINGUARA)).then(d=>{ xinData = d; }).catch(()=>{})]);
   renderStates();
 }
 
@@ -934,8 +1094,9 @@ function startWorld(){
 }
 
 function start(){
-  clearInterval(natTimer); clearInterval(ufTimer); clearInterval(worldTimer);
-  lastIdg = null; ufData = {}; order = []; cityData = {}; window.__top = null;
+  clearInterval(natTimer); clearInterval(ufTimer); clearInterval(worldTimer); clearInterval(paTimer); paTimer = null;
+  lastIdg = null; ufData = {}; order = []; cityData = {}; window.__top = null; xinData = null; paData = {};
+  $('paBody').innerHTML = '';
   alertState = null; selCity = null; loadHist();
   $('ufs').innerHTML = ''; $('paises').innerHTML = '';
   if(window.d3) d3.select('#dots').selectAll('circle').remove();
@@ -943,6 +1104,13 @@ function start(){
   natTimer = setInterval(tickNational, NATIONAL_MS);
   ufTimer = setInterval(tickStates, STATES_MS);
   if(tab === 'mundo') startWorld();
+  if(tab === 'estados') startPA();
+}
+
+function startPA(){
+  clearInterval(paTimer);
+  tickPA();
+  paTimer = setInterval(tickPA, PA_MS);
 }
 
 /* ---------- Abas ---------- */
@@ -957,6 +1125,8 @@ function showTab(t){
   });
   if(t === 'mundo' && !worldTimer) startWorld();
   if(t !== 'mundo'){ clearInterval(worldTimer); worldTimer = null; }
+  if(t === 'estados' && !paTimer) startPA();
+  if(t !== 'estados'){ clearInterval(paTimer); paTimer = null; }
   clearInterval(bolaoTimer); bolaoTimer = null;
   if(t === 'bolao'){
     const tick = ()=>tickBolao().catch(()=>{ $('bolaoStatus').textContent = 'Falha ao atualizar o Bolão. Tentando de novo…'; });
@@ -1120,6 +1290,117 @@ function textoBolao(){
     : `🎯 *Bolão da Apuração* · Chute o resultado do 2º turno e veja se você acerta: ${SITE}#bolao`;
 }
 
+/* ---------- Card de imagem (Status / Stories) ---------- */
+const fotoCache = {};
+function foto(sq){
+  return fotoCache[sq] ||= new Promise(ok=>{
+    const i = new Image();
+    i.crossOrigin = 'anonymous'; // o TSE libera CORS nas fotos, então o canvas pode exportar a imagem
+    i.onload = ()=>ok(i); i.onerror = ()=>ok(null);
+    // "?card" evita reaproveitar a cópia da página, que foi baixada sem CORS e travaria o canvas
+    i.src = `${BASE}/${ele}/fotos/br/${sq}.jpeg?card`;
+  });
+}
+
+async function gerarCard(){
+  const top = window.__cands, nm = window.__nomes;
+  if(!top) throw new Error('sem dados');
+  try{ await document.fonts.load('700 100px Inter'); await document.fonts.load('500 40px Inter'); }catch{}
+  const fotos = await Promise.all(top.map(c=>foto(c.sq)));
+  const W = 1080, H = 1920, cv = document.createElement('canvas');
+  cv.width = W; cv.height = H;
+  const g = cv.getContext('2d');
+  const C = {bg:'#0b0b0c', panel:'#151517', line:'#2a2a2e', text:'#ececee', muted:'#8b8b93', cores:['#cf6a60','#6f93cf']};
+  const F = (w, s) => `${w} ${s}px Inter, system-ui, -apple-system, sans-serif`;
+  // maxW: diminui a fonte até o texto caber
+  const texto = (t, x, y, font, cor, align = 'left', maxW = Infinity) => {
+    g.font = font; g.fillStyle = cor; g.textAlign = align;
+    let [, w, s] = font.match(/^(\d+) (\d+)px/).map(Number);
+    while(g.measureText(t).width > maxW && s > 12){ s -= 4; g.font = font.replace(/\d+px/, s + 'px'); }
+    g.fillText(t, x, y);
+  };
+  const caixa = (x, y, w, h, r, cor) => { g.fillStyle = cor; g.beginPath(); g.roundRect(x, y, w, h, r); g.fill(); };
+  const M = 90;
+
+  g.fillStyle = C.bg; g.fillRect(0, 0, W, H);
+  texto('APURAÇÃO AO VIVO · PRESIDENTE 2026', M, 170, F(600, 32), C.muted);
+  texto(ele === '6258' ? '2º turno' : '1º turno', M, 240, F(700, 56), C.text);
+
+  // Progresso
+  const pst = $('pst').textContent;
+  texto(pst, M, 400, F(700, 130), C.text);
+  g.font = F(700, 130); const wp = g.measureText(pst).width;
+  texto('das seções', M + wp + 24, 350, F(500, 36), C.muted);
+  texto('apuradas', M + wp + 24, 396, F(500, 36), C.muted);
+  caixa(M, 440, W - 2*M, 14, 7, C.line);
+  caixa(M, 440, Math.max(14, (W - 2*M) * num($('pst').textContent.replace('%','')) / 100), 14, 7, C.text);
+
+  // Candidatos
+  top.forEach((c, i)=>{
+    const y0 = 540 + i*430;
+    caixa(M, y0, W - 2*M, 390, 28, C.panel);
+    caixa(M, y0, 10, 390, 5, C.cores[i]);
+    const cx = M + 60 + 110, cy = y0 + 195, r = 110;
+    g.save(); g.beginPath(); g.arc(cx, cy, r, 0, Math.PI*2); g.closePath(); g.fillStyle = C.line; g.fill(); g.clip();
+    if(fotos[i]) g.drawImage(fotos[i], cx - r, cy - r, 2*r, 2*r);
+    g.restore();
+    const tx = cx + r + 50, maxW = W - M - 40 - tx;
+    texto(c.nm, tx, y0 + 110, F(600, 42), C.text, 'left', maxW);
+    texto(c.pct + '%', tx, y0 + 260, F(700, 140), C.cores[i], 'left', maxW);
+    texto(fmt(c.votos) + ' votos', tx, y0 + 330, F(400, 36), C.muted, 'left', maxW);
+  });
+
+  // Diferença e Xinguara
+  texto($('diff').textContent, W/2, 1440, F(500, 36), C.muted, 'center');
+  if(xinData){
+    const p = placar2(xinData);
+    if(p.t){
+      caixa(M, 1500, W - 2*M, 120, 24, C.panel);
+      texto('XINGUARA-PA', M + 40, 1572, F(600, 30), C.muted);
+      g.font = F(700, 44);
+      const a = `${pc1(p.pA)}%`, sep = '  ×  ', b = `${pc1(p.pB)}%`;
+      const wb = g.measureText(b).width, ws = g.measureText(sep).width;
+      texto(b, W - M - 40, 1576, F(700, 44), C.cores[1], 'right');
+      texto(sep, W - M - 40 - wb, 1576, F(700, 44), C.muted, 'right');
+      texto(a, W - M - 40 - wb - ws, 1576, F(700, 44), C.cores[0], 'right');
+    }
+  }
+
+  // Rodapé
+  g.fillStyle = C.line; g.fillRect(M, 1680, W - 2*M, 2);
+  texto('Acompanhe ao vivo', W/2, 1745, F(400, 30), C.muted, 'center');
+  texto(SITE.replace(/^https?:\/\//, '').replace(/\/$/, ''), W/2, 1795, F(600, 36), C.text, 'center', W - 2*M);
+  const hora = new Date().toLocaleTimeString('pt-BR', {hour:'2-digit', minute:'2-digit'});
+  texto(`Atualizado às ${hora} · Dados do TSE · Desenvolvido por Isaque Soares`, W/2, 1850, F(400, 26), C.muted, 'center', W - 2*M);
+
+  return new Promise((ok, err)=>cv.toBlob(b=>b ? ok(b) : err(new Error('toBlob')), 'image/png'));
+}
+
+function baixar(blob, nome){
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob); a.download = nome;
+  document.body.appendChild(a); a.click(); a.remove();
+  setTimeout(()=>URL.revokeObjectURL(a.href), 5000);
+  toast('Imagem salva na galeria/downloads. Agora é só postar no Status ou nos Stories!');
+}
+
+$('cardBtn').addEventListener('click', async ()=>{
+  const b = $('cardBtn'), rotulo = b.innerHTML;
+  b.disabled = true; b.lastChild.textContent = 'Gerando imagem…';
+  try{
+    const blob = await gerarCard();
+    const file = new File([blob], 'apuracao-presidente-2026.png', {type:'image/png'});
+    if(navigator.canShare?.({files:[file]})){
+      try{ await navigator.share({files:[file], text:`Apuração ao vivo, direto do TSE: ${SITE}`}); }
+      catch(e){ if(e.name !== 'AbortError') baixar(blob, file.name); } // sem permissão de compartilhar: salva a imagem
+    }else baixar(blob, file.name);
+  }catch{
+    toast('Não foi possível gerar a imagem agora. Tente de novo em alguns segundos.');
+  }finally{
+    b.disabled = false; b.innerHTML = rotulo;
+  }
+});
+
 // Texto do compartilhamento, montado na hora do toque com o placar mais recente
 const SITE = 'https://szac-dev.github.io/apuracao-presidente-2026/';
 function textoPlacar(){
@@ -1150,6 +1431,39 @@ document.querySelectorAll('[data-ad]').forEach(a=>{
 
 $('turno').addEventListener('change', e=>{ ele = e.target.value; start(); });
 document.addEventListener('visibilitychange', ()=>{ if(!document.hidden) tickNational(); });
+/* ---------- Instalar como app ---------- */
+if('serviceWorker' in navigator && location.protocol === 'https:') navigator.serviceWorker.register('sw.js').catch(()=>{});
+
+let installEvt = null;
+const instalado = () => matchMedia('(display-mode: standalone)').matches || navigator.standalone === true;
+const ehIOS = /iphone|ipad|ipod/i.test(navigator.userAgent);
+function mostrarInstall(){
+  let fechado = false;
+  try{ fechado = localStorage.getItem('installFechado') === '1'; }catch{}
+  if(instalado() || fechado) return;
+  if(installEvt){ $('install').hidden = false; return; }
+  if(ehIOS){
+    // iPhone não tem botão de instalar: explica o caminho pelo Safari
+    $('installTxt').textContent = 'No Safari, toque em Compartilhar (□↑) e depois em "Adicionar à Tela de Início".';
+    $('installBtn').hidden = true;
+    $('install').hidden = false;
+  }
+}
+window.addEventListener('beforeinstallprompt', e=>{ e.preventDefault(); installEvt = e; mostrarInstall(); });
+window.addEventListener('appinstalled', ()=>{ $('install').hidden = true; installEvt = null; });
+$('installBtn').addEventListener('click', async ()=>{
+  if(!installEvt) return;
+  installEvt.prompt();
+  const {outcome} = await installEvt.userChoice;
+  installEvt = null;
+  if(outcome === 'accepted') $('install').hidden = true;
+});
+$('installX').addEventListener('click', ()=>{
+  $('install').hidden = true;
+  try{ localStorage.setItem('installFechado', '1'); }catch{}
+});
+mostrarInstall();
+
 // Tema claro/escuro: começa pelo do sistema e lembra a escolha neste aparelho
 const temaAtual = () => document.documentElement.dataset.theme || (matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
 function setThemeBtn(){
